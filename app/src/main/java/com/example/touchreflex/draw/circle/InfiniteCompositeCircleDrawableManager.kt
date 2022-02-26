@@ -7,8 +7,7 @@ import android.view.View
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.LinkedList
 
 class InfiniteCompositeCircleDrawableManager(
     private val parentView: View,
@@ -17,11 +16,11 @@ class InfiniteCompositeCircleDrawableManager(
 
     private val circles: LinkedList<CompositeCircle> = LinkedList()
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val radius: Float = 75f
+    private val radius: Float = 80f
     private val startCircleDuration: Long = 2000L
     private val startCircleInterval: Long = 2000L
-    private val minCircleDuration: Long = 1000L
-    private val minCircleInterval: Long = 500L
+    private val minCircleDuration: Long = 1250L
+    private val minCircleInterval: Long = 750L
     private var circleDuration: Long = startCircleDuration
     private var circleInterval: Long = startCircleInterval
 
@@ -30,6 +29,7 @@ class InfiniteCompositeCircleDrawableManager(
         circleInterval = startCircleInterval
         postDelayed(buildCompositeCircle())
         postDelayed(buildCompositeCircle(), false, startCircleInterval / 2)
+        postDelayed(buildCompositeCircle(), false, startCircleInterval / 4)
         return this
     }
 
@@ -61,7 +61,7 @@ class InfiniteCompositeCircleDrawableManager(
 
     private fun updateTimers() {
         if (circleDuration > minCircleDuration) {
-            val updatedCircleDuration = circleDuration - (circleDuration / 20L)
+            val updatedCircleDuration = circleDuration - (circleDuration / 30L)
             circleDuration = if (updatedCircleDuration >= minCircleDuration) {
                 updatedCircleDuration
             } else {
@@ -69,7 +69,7 @@ class InfiniteCompositeCircleDrawableManager(
             }
         }
         if (circleInterval > minCircleInterval) {
-            val updatedCircleInterval = circleInterval - (circleInterval / 20L)
+            val updatedCircleInterval = circleInterval - (circleInterval / 30L)
             circleInterval = if (updatedCircleInterval >= minCircleInterval) {
                 updatedCircleInterval
             } else {

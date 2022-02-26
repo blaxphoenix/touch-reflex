@@ -19,12 +19,12 @@ abstract class InfoText(
 
     private fun initPaint() {
         paint.color =
-            ResourcesCompat.getColor(parentView.resources, R.color.colorCircleFill, null)
+            ResourcesCompat.getColor(parentView.resources, R.color.text_basic, null)
         paint.isDither = true
         paint.style = Paint.Style.FILL
         paint.textAlign = Paint.Align.CENTER
         paint.textSize = textSize
-        paint.setShadowLayer(5.5f, 6.0f, 6.0f, parentView.resources.getColor(R.color.black, null))
+        paint.setShadowLayer(5.5f, 6.0f, 6.0f, parentView.resources.getColor(R.color.grey, null))
     }
 
 }

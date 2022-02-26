@@ -36,11 +36,11 @@ data class CompositeCircle(
 
     private fun initPaint() {
         fillPaint.color =
-            ResourcesCompat.getColor(parentView.resources, R.color.colorCircleFill, null)
+            ResourcesCompat.getColor(parentView.resources, R.color.circle_fill, null)
         fillPaint.isDither = true
         fillPaint.style = Paint.Style.FILL
         strokePaint.color =
-            ResourcesCompat.getColor(parentView.resources, R.color.colorCircleStroke, null)
+            ResourcesCompat.getColor(parentView.resources, R.color.circle_stroke, null)
         strokePaint.isDither = true
         strokePaint.style = Paint.Style.FILL
     }

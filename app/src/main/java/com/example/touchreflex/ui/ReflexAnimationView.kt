@@ -24,14 +24,16 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var circleManager: CustomDrawableManager? = null
     private var startTextManager: CustomDrawableManager? = null
     private var restartTextManager: CustomDrawableManager? = null
-    private var scoreTextManager: CustomDrawableManager? = null
+    private var scoreTextManager: InfoTextDrawableManager? = null
     private var scoreInfoText: SimpleScoreInfoText
+    private var highScoreInfoText: SimpleScoreInfoText? = null
     private var totalScore = 0
+    private var highScore = 0
 
     init {
         startTextManager =
             InfoTextDrawableManager(
-                listOf(
+                arrayListOf(
                     AnimatedInfoText(
                         this,
                         resources.getString(R.string.start_game)
@@ -41,7 +43,7 @@ class ReflexAnimationView(context: Context) : View(context) {
 
         restartTextManager =
             InfoTextDrawableManager(
-                listOf(
+                arrayListOf(
                     AnimatedInfoText(
                         this,
                         resources.getString(R.string.restart_game)
@@ -55,7 +57,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         )
         scoreTextManager =
             InfoTextDrawableManager(
-                listOf(
+                arrayListOf(
                     scoreInfoText
                 )
             )
@@ -76,6 +78,19 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         startTextManager?.init()
+
+        if (highScoreInfoText == null) {
+            val xPos = this.width / 2f
+            val yPos = 250f
+            highScoreInfoText = SimpleScoreInfoText(
+                this,
+                "High Score: $highScore",
+                true,
+                xPos,
+                yPos
+            )
+            scoreTextManager?.elements?.add(highScoreInfoText!!)
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -117,6 +132,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         state = GAME
         totalScore = 0
         scoreInfoText.text = totalScore.toString()
+        highScoreInfoText?.isIgnored = true
         circleManager?.onStop()
         circleManager?.init()
     }
@@ -129,6 +145,13 @@ class ReflexAnimationView(context: Context) : View(context) {
     private fun gameOver() {
         state = RESTART
         restartTextManager?.init()
+
+        if (totalScore > highScore) {
+            highScore = totalScore
+        }
+        highScoreInfoText?.isIgnored = false
+        highScoreInfoText?.text = "High Score: $highScore"
+
         scoreInfoText.text = "Total Score: $totalScore"
     }
 

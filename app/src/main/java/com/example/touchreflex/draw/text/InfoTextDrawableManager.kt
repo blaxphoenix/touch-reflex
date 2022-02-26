@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import com.example.touchreflex.draw.CustomDrawableManager
 
 class InfoTextDrawableManager(
-    private val elements: List<InfoText>
+    val elements: ArrayList<InfoText>
 ) : CustomDrawableManager {
 
     override fun init(): CustomDrawableManager {
