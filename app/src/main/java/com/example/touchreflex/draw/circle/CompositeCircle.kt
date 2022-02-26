@@ -11,15 +11,16 @@ import androidx.core.content.res.ResourcesCompat
 import com.example.touchreflex.R
 import com.example.touchreflex.draw.ReverseInterpolator
 import com.example.touchreflex.draw.CustomDrawable
+import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.utils.Utils
 
 data class CompositeCircle(
-    val circleManager: CircleManager,
+    val circleManager: CustomDrawableManager,
     val parentView: View,
     val x: Float,
     val y: Float,
     var r: Float,
-    val duration: Long = 1000L
+    val duration: Long
 ) : CustomDrawable {
 
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -34,10 +35,8 @@ data class CompositeCircle(
     }
 
     private fun initPaint() {
-        fillPaint.color = ResourcesCompat.getColor(
-            parentView.resources,
-            R.color.colorCircleFill, null
-        )
+        fillPaint.color =
+            ResourcesCompat.getColor(parentView.resources, R.color.colorCircleFill, null)
         fillPaint.isDither = true
         fillPaint.style = Paint.Style.FILL
         strokePaint.color =

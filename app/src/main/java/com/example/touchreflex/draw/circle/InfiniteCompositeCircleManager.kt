@@ -4,23 +4,30 @@ import android.graphics.Canvas
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import com.example.touchreflex.draw.CustomDrawableManager
+import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
 
 class InfiniteCompositeCircleManager(
-    private val parentView: View
-) : CircleManager {
+    private val parentView: View,
+    private val callback: ReflexAnimationCallback? = null
+) : CustomDrawableManager {
 
     private val circles: ArrayList<CompositeCircle> = arrayListOf()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val radius: Float = 75f
-    private var circleDuration: Long = 2000L
-    private var circleInterval: Long = 2000L
-    private val minCircleDuration: Long = 500L
+    private val startCircleDuration: Long = 2000L
+    private val startCircleInterval: Long = 2000L
+    private val minCircleDuration: Long = 1000L
     private val minCircleInterval: Long = 500L
+    private var circleDuration: Long = startCircleDuration
+    private var circleInterval: Long = startCircleInterval
 
-    override fun init(): CircleManager {
+    override fun init(): CustomDrawableManager {
+        circleDuration = startCircleDuration
+        circleInterval = startCircleInterval
         postDelayed(buildCompositeCircle())
-        postDelayed(buildCompositeCircle(), false)
+        postDelayed(buildCompositeCircle(), false, startCircleInterval / 2)
         return this
     }
 
@@ -35,12 +42,16 @@ class InfiniteCompositeCircleManager(
         )
     }
 
-    private fun postDelayed(circle: CompositeCircle, updateTimers: Boolean = true) {
+    private fun postDelayed(
+        circle: CompositeCircle,
+        updateTimers: Boolean = true,
+        extraDelay: Long = 0L
+    ) {
         mainHandler.postDelayed({
             circles.add(circle)
             circle.startDrawing()
             postDelayed(buildCompositeCircle())
-        }, Utils.nextLongWithMargin(circleInterval, circleInterval / 3L))
+        }, extraDelay + Utils.nextLongWithMargin(circleInterval, circleInterval / 3L))
         if (updateTimers) {
             updateTimers()
         }
@@ -48,7 +59,7 @@ class InfiniteCompositeCircleManager(
 
     private fun updateTimers() {
         if (circleDuration > minCircleDuration) {
-            val updatedCircleDuration = circleDuration - (circleDuration / 10L)
+            val updatedCircleDuration = circleDuration - (circleDuration / 20L)
             circleDuration = if (updatedCircleDuration >= minCircleDuration) {
                 updatedCircleDuration
             } else {
@@ -56,7 +67,7 @@ class InfiniteCompositeCircleManager(
             }
         }
         if (circleInterval > minCircleInterval) {
-            val updatedCircleInterval = circleInterval - (circleInterval / 10L)
+            val updatedCircleInterval = circleInterval - (circleInterval / 20L)
             circleInterval = if (updatedCircleInterval >= minCircleInterval) {
                 updatedCircleInterval
             } else {
@@ -83,6 +94,12 @@ class InfiniteCompositeCircleManager(
 
     override fun onPause() {
         circles.forEach { it.pause() }
+        mainHandler.removeCallbacksAndMessages(null)
+        callback?.onGameOver()
+    }
+
+    override fun onStop() {
+        circles.clear()
         mainHandler.removeCallbacksAndMessages(null)
     }
 
