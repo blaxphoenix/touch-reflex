@@ -7,13 +7,15 @@ import android.view.View
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
+import java.util.*
+import kotlin.collections.ArrayList
 
 class InfiniteCompositeCircleDrawableManager(
     private val parentView: View,
     private val callback: ReflexAnimationCallback? = null
 ) : CustomDrawableManager {
 
-    private val circles: ArrayList<CompositeCircle> = arrayListOf()
+    private val circles: LinkedList<CompositeCircle> = LinkedList()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val radius: Float = 75f
     private val startCircleDuration: Long = 2000L
@@ -81,15 +83,18 @@ class InfiniteCompositeCircleDrawableManager(
     }
 
     override fun onTouch(touchX: Float, touchY: Float) {
-        val toRemove: ArrayList<CompositeCircle> = arrayListOf()
-        for (circle in circles.reversed()) {
+        var toRemove: CompositeCircle? = null
+        for (circle in circles.descendingIterator()) {
             if (circle.isInBoundary(touchX, touchY)) {
                 circle.onDisable()
-                toRemove.add(circle)
+                toRemove = circle
                 break
             }
         }
-        circles.removeAll(toRemove)
+        if (toRemove != null) {
+            callback?.onScored()
+        }
+        circles.remove(toRemove)
     }
 
     override fun onPause() {

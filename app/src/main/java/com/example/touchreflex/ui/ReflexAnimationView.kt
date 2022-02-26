@@ -9,7 +9,9 @@ import com.example.touchreflex.R
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
+import com.example.touchreflex.draw.text.AnimatedInfoText
 import com.example.touchreflex.draw.text.InfoTextDrawableManager
+import com.example.touchreflex.draw.text.SimpleScoreInfoText
 import com.example.touchreflex.ui.ReflexAnimationView.State.*
 
 class ReflexAnimationView(context: Context) : View(context) {
@@ -22,19 +24,51 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var circleManager: CustomDrawableManager? = null
     private var startTextManager: CustomDrawableManager? = null
     private var restartTextManager: CustomDrawableManager? = null
+    private var scoreTextManager: CustomDrawableManager? = null
+    private var scoreInfoText: SimpleScoreInfoText
+    private var totalScore = 0
 
     init {
         startTextManager =
-            InfoTextDrawableManager(this, resources.getString(R.string.start_game))
+            InfoTextDrawableManager(
+                listOf(
+                    AnimatedInfoText(
+                        this,
+                        resources.getString(R.string.start_game)
+                    )
+                )
+            )
+
         restartTextManager =
-            InfoTextDrawableManager(this, resources.getString(R.string.restart_game))
+            InfoTextDrawableManager(
+                listOf(
+                    AnimatedInfoText(
+                        this,
+                        resources.getString(R.string.restart_game)
+                    )
+                )
+            )
+
+        scoreInfoText = SimpleScoreInfoText(
+            this,
+            totalScore.toString()
+        )
+        scoreTextManager =
+            InfoTextDrawableManager(
+                listOf(
+                    scoreInfoText
+                )
+            )
 
         circleManager = InfiniteCompositeCircleDrawableManager(
             this,
             object : ReflexAnimationCallback {
+                override fun onScored() {
+                    scored()
+                }
+
                 override fun onGameOver() {
-                    state = RESTART
-                    restartTextManager?.init()
+                    gameOver()
                 }
             }
         )
@@ -47,10 +81,14 @@ class ReflexAnimationView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         when (state) {
             START -> startTextManager?.onDraw(canvas)
-            GAME -> circleManager?.onDraw(canvas)
+            GAME -> {
+                circleManager?.onDraw(canvas)
+                scoreTextManager?.onDraw(canvas)
+            }
             RESTART -> {
                 circleManager?.onDraw(canvas)
                 restartTextManager?.onDraw(canvas)
+                scoreTextManager?.onDraw(canvas)
             }
         }
     }
@@ -63,14 +101,11 @@ class ReflexAnimationView(context: Context) : View(context) {
             MotionEvent.ACTION_DOWN -> {
                 when (state) {
                     START -> {
-                        state = GAME
                         initGame()
                     }
                     GAME -> circleManager?.onTouch(touchX, touchY)
                     RESTART -> {
-                        state = GAME
-                        circleManager?.onStop()
-                        circleManager?.init()
+                        initGame()
                     }
                 }
             }
@@ -79,7 +114,22 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun initGame() {
+        state = GAME
+        totalScore = 0
+        scoreInfoText.text = totalScore.toString()
+        circleManager?.onStop()
         circleManager?.init()
+    }
+
+    private fun scored() {
+        totalScore++
+        scoreInfoText.text = totalScore.toString()
+    }
+
+    private fun gameOver() {
+        state = RESTART
+        restartTextManager?.init()
+        scoreInfoText.text = "Total Score: $totalScore"
     }
 
 }

@@ -1,23 +1,19 @@
 package com.example.touchreflex.draw.text
 
 import android.graphics.Canvas
-import android.view.View
 import com.example.touchreflex.draw.CustomDrawableManager
 
 class InfoTextDrawableManager(
-    parentView: View,
-    text: String
+    private val elements: List<InfoText>
 ) : CustomDrawableManager {
 
-    private val infoText: InfoText = InfoText(parentView, text)
-
     override fun init(): CustomDrawableManager {
-        infoText.onStartDrawing()
+        elements.forEach { it.onStartDrawing() }
         return this
     }
 
     override fun onDraw(canvas: Canvas) {
-        infoText.onDraw(canvas)
+        elements.forEach { it.onDraw(canvas) }
     }
 
     override fun onTouch(touchX: Float, touchY: Float) {}
