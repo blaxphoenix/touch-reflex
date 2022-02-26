@@ -1,4 +1,4 @@
-package com.example.touchreflex
+package com.example.touchreflex.utils
 
 import kotlin.random.Random
 

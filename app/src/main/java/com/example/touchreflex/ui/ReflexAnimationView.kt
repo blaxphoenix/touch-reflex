@@ -1,32 +1,22 @@
-package com.example.touchreflex
+package com.example.touchreflex.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.os.Handler
-import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
+import com.example.touchreflex.draw.circle.CircleManager
+import com.example.touchreflex.draw.circle.InfiniteCompositeCircleManager
 
 class ReflexAnimationView(context: Context) : View(context) {
 
-    private val mainHandler = Handler(Looper.getMainLooper())
-    private var circleManager: CompositeCircleManager? = null
+    private var circleManager: CircleManager? = null
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        circleManager = CompositeCircleManager(
-            this,
-            mainHandler,
-            width,
-            height,
-            15,
-            500L,
-            750L
-        ).init()
+        circleManager = InfiniteCompositeCircleManager(this).init()
     }
 
     override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
         circleManager?.onDraw(canvas)
     }
 
