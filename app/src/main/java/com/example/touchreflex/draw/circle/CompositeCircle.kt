@@ -26,8 +26,8 @@ data class CompositeCircle(
     private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var animator: ValueAnimator? = null
-    private var isInverted: Boolean = false
-    private var isDisabled: Boolean = false
+    private var isInverted = false
+    private var isDisabled = false
 
     init {
         initPaint()
@@ -55,21 +55,21 @@ data class CompositeCircle(
         }
         animator?.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                if (!isInverted) {
-                    animator?.interpolator =
-                        ReverseInterpolator(AccelerateDecelerateInterpolator())
-                    animator?.start()
-                    isInverted = true
-                } else {
+                if (isInverted) {
                     if (!isDisabled) {
                         circleManager.onPause()
                     }
+                } else {
+                    animation?.interpolator =
+                        ReverseInterpolator(AccelerateDecelerateInterpolator())
+                    animation?.start()
+                    isInverted = true
                 }
             }
         })
     }
 
-    fun startDrawing() {
+    override fun onStartDrawing() {
         animator?.start()
     }
 
@@ -79,11 +79,7 @@ data class CompositeCircle(
         parentView.invalidate()
     }
 
-    fun isInBoundary(touchX: Float, touchY: Float): Boolean {
-        return ((touchX - x) * (touchX - x)) + ((touchY - y) * (touchY - y)) <= r * r
-    }
-
-    fun disable() {
+    override fun onDisable() {
         isDisabled = true
         animator?.cancel()
         animator?.removeAllListeners()
@@ -92,6 +88,10 @@ data class CompositeCircle(
 
     fun pause() {
         animator?.pause()
+    }
+
+    fun isInBoundary(touchX: Float, touchY: Float): Boolean {
+        return ((touchX - x) * (touchX - x)) + ((touchY - y) * (touchY - y)) <= r * r
     }
 
 }

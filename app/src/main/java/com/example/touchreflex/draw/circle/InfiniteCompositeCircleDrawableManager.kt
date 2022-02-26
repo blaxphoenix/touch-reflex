@@ -8,7 +8,7 @@ import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
 
-class InfiniteCompositeCircleManager(
+class InfiniteCompositeCircleDrawableManager(
     private val parentView: View,
     private val callback: ReflexAnimationCallback? = null
 ) : CustomDrawableManager {
@@ -35,8 +35,8 @@ class InfiniteCompositeCircleManager(
         return CompositeCircle(
             this,
             parentView,
-            Utils.nextFloat(radius, parentView.width.toFloat()),
-            Utils.nextFloat(radius, parentView.height.toFloat()),
+            Utils.nextFloat(radius, parentView.width.toFloat() - radius),
+            Utils.nextFloat(radius, parentView.height.toFloat() - radius),
             radius,
             circleDuration
         )
@@ -49,7 +49,7 @@ class InfiniteCompositeCircleManager(
     ) {
         mainHandler.postDelayed({
             circles.add(circle)
-            circle.startDrawing()
+            circle.onStartDrawing()
             postDelayed(buildCompositeCircle())
         }, extraDelay + Utils.nextLongWithMargin(circleInterval, circleInterval / 3L))
         if (updateTimers) {
@@ -84,7 +84,7 @@ class InfiniteCompositeCircleManager(
         val toRemove: ArrayList<CompositeCircle> = arrayListOf()
         for (circle in circles.reversed()) {
             if (circle.isInBoundary(touchX, touchY)) {
-                circle.disable()
+                circle.onDisable()
                 toRemove.add(circle)
                 break
             }

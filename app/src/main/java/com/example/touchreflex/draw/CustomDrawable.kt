@@ -4,4 +4,6 @@ import android.graphics.Canvas
 
 interface CustomDrawable {
     fun onDraw(canvas: Canvas)
+    fun onDisable()
+    fun onStartDrawing()
 }

@@ -3,19 +3,16 @@ package com.example.touchreflex.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.view.MotionEvent
 import android.view.View
-import androidx.core.content.res.ResourcesCompat
 import com.example.touchreflex.R
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
-import com.example.touchreflex.draw.circle.InfiniteCompositeCircleManager
+import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
+import com.example.touchreflex.draw.text.InfoTextDrawableManager
 import com.example.touchreflex.ui.ReflexAnimationView.State.*
 
 class ReflexAnimationView(context: Context) : View(context) {
-
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     private enum class State {
         START, GAME, RESTART
@@ -23,33 +20,37 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     private var state: State = START
     private var circleManager: CustomDrawableManager? = null
+    private var startTextManager: CustomDrawableManager? = null
+    private var restartTextManager: CustomDrawableManager? = null
 
     init {
-        circleManager = InfiniteCompositeCircleManager(
+        startTextManager =
+            InfoTextDrawableManager(this, resources.getString(R.string.start_game))
+        restartTextManager =
+            InfoTextDrawableManager(this, resources.getString(R.string.restart_game))
+
+        circleManager = InfiniteCompositeCircleDrawableManager(
             this,
             object : ReflexAnimationCallback {
                 override fun onGameOver() {
                     state = RESTART
+                    restartTextManager?.init()
                 }
-
             }
         )
-        paint.color =
-            ResourcesCompat.getColor(this.resources, R.color.colorCircleFill, null)
-        paint.isDither = true
-        paint.style = Paint.Style.FILL
-        paint.textSize = 100f
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        startTextManager?.init()
     }
 
     override fun onDraw(canvas: Canvas) {
         when (state) {
-            START -> {
-                canvas.drawText("START GAME", width / 2f, height / 2f, paint)
-            }
+            START -> startTextManager?.onDraw(canvas)
             GAME -> circleManager?.onDraw(canvas)
             RESTART -> {
                 circleManager?.onDraw(canvas)
-                canvas.drawText("RESTART GAME", width / 2f, height / 2f, paint)
+                restartTextManager?.onDraw(canvas)
             }
         }
     }
