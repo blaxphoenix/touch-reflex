@@ -21,7 +21,7 @@ class InfiniteCompositeCircleDrawableManager(
     private val startCircleDuration: Long = 2000L
     private val startCircleInterval: Long = 2000L
     private val minCircleDuration: Long = 1250L
-    private val minCircleInterval: Long = 750L
+    private val minCircleInterval: Long = 1000L
     private var circleDuration: Long = startCircleDuration
     private var circleInterval: Long = startCircleInterval
     private var hue: Float = 0f

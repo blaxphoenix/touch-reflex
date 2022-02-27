@@ -3,6 +3,7 @@ package com.example.touchreflex.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
@@ -23,6 +24,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
+    private var soundEffectPlayer: MediaPlayer
 
     private var state: State = START
     private var circleManager: CustomDrawableManager? = null
@@ -78,6 +80,8 @@ class ReflexAnimationView(context: Context) : View(context) {
                 }
             }
         )
+
+        soundEffectPlayer = MediaPlayer.create(context, R.raw.glass_002)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -145,6 +149,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     private fun scored() {
         totalScore++
         scoreInfoText.text = totalScore.toString()
+        soundEffectPlayer.start()
     }
 
     private fun gameOver() {
