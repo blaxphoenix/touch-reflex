@@ -1,2 +1,2 @@
 # touch-reflex
-Touch reflex app
+A simple game testing your reflexes.
