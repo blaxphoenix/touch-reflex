@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.media.SoundPool
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
