@@ -3,7 +3,10 @@ package com.example.touchreflex.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.SoundPool
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
@@ -24,9 +27,10 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
-    private var clickMP: MediaPlayer
-    private var startMP: MediaPlayer
-    private var stopMP: MediaPlayer
+    private val soundPool: SoundPool
+    private val startSoundId: Int
+    private val stopSoundId: Int
+    private val touchSoundId: Int
 
     private var state: State = START
     private var circleManager: CustomDrawableManager? = null
@@ -83,9 +87,22 @@ class ReflexAnimationView(context: Context) : View(context) {
             }
         )
 
-        clickMP = MediaPlayer.create(context, R.raw.glass_002)
-        startMP = MediaPlayer.create(context, R.raw.confirmation_002)
-        stopMP = MediaPlayer.create(context, R.raw.error_006)
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(3)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .build()
+            )
+            .build()
+
+        touchSoundId = soundPool.load(context, R.raw.glass_002, 1)
+        startSoundId = soundPool.load(context, R.raw.confirmation_002, 1)
+        stopSoundId = soundPool.load(context, R.raw.error_006, 1)
+//        clickMP = MediaPlayer.create(context, R.raw.glass_002)
+//        startMP = MediaPlayer.create(context, R.raw.confirmation_002)
+//        stopMP = MediaPlayer.create(context, R.raw.error_006)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -134,7 +151,8 @@ class ReflexAnimationView(context: Context) : View(context) {
                     RESTART -> {
                         initGame()
                     }
-                    else -> {}
+                    else -> {
+                    }
                 }
             }
         }
@@ -142,7 +160,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun initGame() {
-        startMP.start()
+        soundPool.play(startSoundId, 1f, 1f, 0, 0, 1f)
         state = GAME
         totalScore = 0
         scoreInfoText.text = totalScore.toString()
@@ -152,13 +170,13 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun scored() {
-        clickMP.start()
+        soundPool.play(touchSoundId, 1f, 1f, 0, 0, 1f)
         totalScore++
         scoreInfoText.text = totalScore.toString()
     }
 
     private fun gameOver() {
-        stopMP.start()
+        soundPool.play(stopSoundId, 1f, 1f, 0, 0, 1f)
         mainHandler.postDelayed({
             state = RESTART
         }, 750L)
