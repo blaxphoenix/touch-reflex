@@ -11,7 +11,6 @@ class MainActivity : AppCompatActivity() {
         val customView = ReflexAnimationView(this)
         setContentView(customView)
 
-        val mp = MediaPlayer.create(this, R.raw.alive_music)
-        mp.start()
+        MediaPlayer.create(this, R.raw.alive_music).start()
     }
 }

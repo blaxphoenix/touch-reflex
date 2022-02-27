@@ -24,7 +24,9 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
-    private var soundEffectPlayer: MediaPlayer
+    private var clickMP: MediaPlayer
+    private var startMP: MediaPlayer
+    private var stopMP: MediaPlayer
 
     private var state: State = START
     private var circleManager: CustomDrawableManager? = null
@@ -81,7 +83,9 @@ class ReflexAnimationView(context: Context) : View(context) {
             }
         )
 
-        soundEffectPlayer = MediaPlayer.create(context, R.raw.glass_002)
+        clickMP = MediaPlayer.create(context, R.raw.glass_002)
+        startMP = MediaPlayer.create(context, R.raw.confirmation_002)
+        stopMP = MediaPlayer.create(context, R.raw.error_006)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -138,6 +142,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun initGame() {
+        startMP.start()
         state = GAME
         totalScore = 0
         scoreInfoText.text = totalScore.toString()
@@ -147,12 +152,13 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun scored() {
+        clickMP.start()
         totalScore++
         scoreInfoText.text = totalScore.toString()
-        soundEffectPlayer.start()
     }
 
     private fun gameOver() {
+        stopMP.start()
         mainHandler.postDelayed({
             state = RESTART
         }, 750L)
