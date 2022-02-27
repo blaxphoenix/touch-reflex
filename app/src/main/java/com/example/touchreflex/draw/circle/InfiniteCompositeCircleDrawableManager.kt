@@ -1,6 +1,7 @@
 package com.example.touchreflex.draw.circle
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -23,37 +24,53 @@ class InfiniteCompositeCircleDrawableManager(
     private val minCircleInterval: Long = 750L
     private var circleDuration: Long = startCircleDuration
     private var circleInterval: Long = startCircleInterval
+    private var hue: Float = 0f
+
+    private val saturation: Float = 0.8f
 
     override fun init(): CustomDrawableManager {
         circleDuration = startCircleDuration
         circleInterval = startCircleInterval
-        postDelayed(buildCompositeCircle())
-        postDelayed(buildCompositeCircle(), false, startCircleInterval / 2)
-        postDelayed(buildCompositeCircle(), false, startCircleInterval / 4)
+        postDelayed(buildCompositeCircle(), initialDelay = 250)
+        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval / 2)
+        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval / 4)
         return this
     }
 
     private fun buildCompositeCircle(): CompositeCircle {
+        updateHue()
         return CompositeCircle(
             this,
             parentView,
             Utils.nextFloat(radius, parentView.width.toFloat() - radius),
             Utils.nextFloat(radius, parentView.height.toFloat() - radius),
             radius,
-            circleDuration
+            circleDuration,
+            Color.HSVToColor(floatArrayOf(hue, saturation, 1f)),
+            Color.HSVToColor(150, floatArrayOf(hue, saturation, 1f))
         )
+    }
+
+    private fun updateHue() {
+        hue = if (hue < 360) {
+            hue + 5
+        } else {
+            0f
+        }
     }
 
     private fun postDelayed(
         circle: CompositeCircle,
         updateTimers: Boolean = true,
+        initialDelay: Long? = null,
         extraDelay: Long = 0L
     ) {
+        val delay = initialDelay ?: Utils.nextLongWithMargin(circleInterval, circleInterval / 3L)
         mainHandler.postDelayed({
             circles.add(circle)
             circle.onStartDrawing()
             postDelayed(buildCompositeCircle())
-        }, extraDelay + Utils.nextLongWithMargin(circleInterval, circleInterval / 3L))
+        }, extraDelay + delay)
         if (updateTimers) {
             updateTimers()
         }

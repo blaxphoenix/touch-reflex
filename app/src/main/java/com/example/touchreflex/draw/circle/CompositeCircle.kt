@@ -17,14 +17,16 @@ import com.example.touchreflex.utils.Utils
 data class CompositeCircle(
     val circleManager: CustomDrawableManager,
     val parentView: View,
-    val x: Float,
-    val y: Float,
-    var r: Float,
-    val duration: Long
+    val xCenter: Float,
+    val yCenter: Float,
+    var radius: Float,
+    val duration: Long,
+    val colorFill: Int? = null,
+    val colorStroke: Int? = null
 ) : CustomDrawable {
 
-    private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
     private var animator: ValueAnimator? = null
     private var isInverted = false
     private var isDisabled = false
@@ -35,14 +37,22 @@ data class CompositeCircle(
     }
 
     private fun initPaint() {
-        fillPaint.color =
-            ResourcesCompat.getColor(parentView.resources, R.color.circle_fill, null)
-        fillPaint.isDither = true
-        fillPaint.style = Paint.Style.FILL
-        strokePaint.color =
-            ResourcesCompat.getColor(parentView.resources, R.color.circle_stroke, null)
-        strokePaint.isDither = true
-        strokePaint.style = Paint.Style.FILL
+        paintFill.isDither = true
+        paintFill.style = Paint.Style.FILL
+        paintStroke.isDither = true
+        paintStroke.style = Paint.Style.FILL
+        initColors()
+    }
+
+    private fun initColors() {
+        paintFill.color =
+            colorFill ?: ResourcesCompat.getColor(
+                parentView.resources, R.color.circle_fill, null
+            )
+        paintStroke.color =
+            colorStroke ?: ResourcesCompat.getColor(
+                parentView.resources, R.color.circle_stroke, null
+            )
     }
 
     private fun initAnimator() {
@@ -50,7 +60,7 @@ data class CompositeCircle(
         animator?.duration = Utils.nextLongWithMargin(duration)
         animator?.interpolator = AccelerateDecelerateInterpolator()
         animator?.addUpdateListener {
-            r = it.animatedValue as Float
+            radius = it.animatedValue as Float
             parentView.invalidate()
         }
         animator?.addListener(object : AnimatorListenerAdapter() {
@@ -62,6 +72,7 @@ data class CompositeCircle(
                 } else {
                     animation?.interpolator =
                         ReverseInterpolator(AccelerateDecelerateInterpolator())
+                    animation?.duration = (Utils.nextLongWithMargin(duration) * 1.5).toLong()
                     animation?.start()
                     isInverted = true
                 }
@@ -74,8 +85,8 @@ data class CompositeCircle(
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawCircle(x, y, r, strokePaint)
-        canvas.drawCircle(x, y, r - (r * 0.25f), fillPaint)
+        canvas.drawCircle(xCenter, yCenter, radius, paintStroke)
+        canvas.drawCircle(xCenter, yCenter, radius - (radius * 0.25f), paintFill)
         parentView.invalidate()
     }
 
@@ -91,7 +102,7 @@ data class CompositeCircle(
     }
 
     fun isInBoundary(touchX: Float, touchY: Float): Boolean {
-        return ((touchX - x) * (touchX - x)) + ((touchY - y) * (touchY - y)) <= r * r
+        return ((touchX - xCenter) * (touchX - xCenter)) + ((touchY - yCenter) * (touchY - yCenter)) <= radius * radius
     }
 
 }

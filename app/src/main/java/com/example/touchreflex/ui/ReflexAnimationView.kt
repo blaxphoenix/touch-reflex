@@ -3,6 +3,8 @@ package com.example.touchreflex.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import com.example.touchreflex.R
@@ -17,8 +19,10 @@ import com.example.touchreflex.ui.ReflexAnimationView.State.*
 class ReflexAnimationView(context: Context) : View(context) {
 
     private enum class State {
-        START, GAME, RESTART
+        START, GAME, RESTART_DELAY, RESTART
     }
+
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private var state: State = START
     private var circleManager: CustomDrawableManager? = null
@@ -100,7 +104,7 @@ class ReflexAnimationView(context: Context) : View(context) {
                 circleManager?.onDraw(canvas)
                 scoreTextManager?.onDraw(canvas)
             }
-            RESTART -> {
+            RESTART, RESTART_DELAY -> {
                 circleManager?.onDraw(canvas)
                 restartTextManager?.onDraw(canvas)
                 scoreTextManager?.onDraw(canvas)
@@ -122,6 +126,7 @@ class ReflexAnimationView(context: Context) : View(context) {
                     RESTART -> {
                         initGame()
                     }
+                    else -> {}
                 }
             }
         }
@@ -143,7 +148,11 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun gameOver() {
-        state = RESTART
+        mainHandler.postDelayed({
+            state = RESTART
+        }, 750L)
+
+        state = RESTART_DELAY
         restartTextManager?.init()
 
         if (totalScore > highScore) {
