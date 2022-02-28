@@ -7,7 +7,7 @@ import com.example.touchreflex.R
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var musicMP: MediaPlayer
+    private var musicMP: MediaPlayer? = null
 
     override fun onStart() {
         super.onStart()
@@ -20,10 +20,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(customView)
     }
 
+    override fun onStop() {
+        super.onStop()
+        musicMP?.pause()
+    }
+
     private fun setUpMediaPlayer() {
-        musicMP = MediaPlayer.create(this, R.raw.alive_music)
-        musicMP.isLooping = true
-        musicMP.start()
+        if (musicMP == null) {
+            musicMP = MediaPlayer.create(this, R.raw.alive_music)
+            musicMP?.isLooping = true
+        }
+        musicMP?.start()
     }
 
 }
