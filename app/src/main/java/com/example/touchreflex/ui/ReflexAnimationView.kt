@@ -98,9 +98,6 @@ class ReflexAnimationView(context: Context) : View(context) {
         touchSoundId = soundPool.load(context, R.raw.glass_002, 1)
         startSoundId = soundPool.load(context, R.raw.confirmation_002, 1)
         stopSoundId = soundPool.load(context, R.raw.error_006, 1)
-//        clickMP = MediaPlayer.create(context, R.raw.glass_002)
-//        startMP = MediaPlayer.create(context, R.raw.confirmation_002)
-//        stopMP = MediaPlayer.create(context, R.raw.error_006)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
