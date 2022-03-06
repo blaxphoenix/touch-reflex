@@ -169,15 +169,22 @@ class ReflexAnimationView(context: Context) : View(context) {
         val touchY = event.y
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                // only in the active game state, so the clicking/touching is reactive
+                if (state == GAME) {
+                    circleManager?.onTouch(touchX, touchY)
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                // don't catch accidental navigation swipes if user wants to exit the app or go back
                 when (state) {
                     START -> {
                         initGame()
                     }
-                    GAME -> circleManager?.onTouch(touchX, touchY)
                     RESTART -> {
                         initGame()
                     }
                     else -> {
+                        // nothing
                     }
                 }
             }
