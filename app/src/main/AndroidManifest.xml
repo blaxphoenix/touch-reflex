@@ -3,6 +3,7 @@
     package="com.example.touchreflex">
 
     <application
+        android:name=".TouchReflex"
         android:hardwareAccelerated="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
