@@ -3,10 +3,15 @@ package com.example.touchreflex.ui
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.example.touchreflex.R
+import com.example.touchreflex.TouchReflex
 
 class MainActivity : AppCompatActivity() {
 
+    private val highScoreViewModel: HighScoreViewModel by viewModels {
+        HighScoreViewModel.HighScoreViewModelFactory((application as TouchReflex).repository)
+    }
     private var musicMP: MediaPlayer? = null
 
     override fun onStart() {
@@ -16,8 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val customView = ReflexAnimationView(this)
-        setContentView(customView)
+        setContentView(ReflexAnimationView(this).setUpView(highScoreViewModel))
     }
 
     override fun onStop() {

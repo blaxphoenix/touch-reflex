@@ -9,7 +9,12 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.example.touchreflex.R
+import com.example.touchreflex.db.GameMode
+import com.example.touchreflex.db.HighScoreItem
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
@@ -22,6 +27,15 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     private enum class State {
         START, GAME, RESTART_DELAY, RESTART
+    }
+
+    private val highScoreObserver = Observer<MutableList<HighScoreItem>> { list ->
+        list?.let {
+            val item = list.firstOrNull { it.gameMode == GameMode.DEFAULT }
+            if (item != null) {
+                highScore = item.score
+            }
+        }
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -39,6 +53,8 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var highScoreInfoText: SimpleScoreInfoText? = null
     private var totalScore = 0
     private var highScore = 0
+
+    private lateinit var highScoreViewModel: HighScoreViewModel
 
     init {
         startTextManager =
@@ -98,9 +114,21 @@ class ReflexAnimationView(context: Context) : View(context) {
         touchSoundId = soundPool.load(context, R.raw.glass_002, 1)
         startSoundId = soundPool.load(context, R.raw.confirmation_002, 1)
         stopSoundId = soundPool.load(context, R.raw.error_006, 1)
-//        clickMP = MediaPlayer.create(context, R.raw.glass_002)
-//        startMP = MediaPlayer.create(context, R.raw.confirmation_002)
-//        stopMP = MediaPlayer.create(context, R.raw.error_006)
+    }
+
+    fun setUpView(highScoreViewModel: HighScoreViewModel): ReflexAnimationView {
+        this.highScoreViewModel = highScoreViewModel
+        return this
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        highScoreViewModel.allHighScoreItems.observeForever(highScoreObserver)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        highScoreViewModel.allHighScoreItems.removeObserver(highScoreObserver)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -184,6 +212,7 @@ class ReflexAnimationView(context: Context) : View(context) {
 
         if (totalScore > highScore) {
             highScore = totalScore
+            highScoreViewModel.insert(HighScoreItem(GameMode.DEFAULT, highScore))
         }
         highScoreInfoText?.isIgnored = false
         highScoreInfoText?.text = "High Score: $highScore"
