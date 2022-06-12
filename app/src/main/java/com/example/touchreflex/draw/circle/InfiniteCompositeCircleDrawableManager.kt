@@ -20,13 +20,14 @@ class InfiniteCompositeCircleDrawableManager(
     private val radius: Float = 80f
     private val startCircleDuration: Long = 2000L
     private val startCircleInterval: Long = 2000L
-    private val minCircleDuration: Long = 1250L
-    private val minCircleInterval: Long = 1000L
+    private val minCircleDuration: Long = 1000L
+    private val minCircleInterval: Long = 1150L
     private var circleDuration: Long = startCircleDuration
     private var circleInterval: Long = startCircleInterval
     private var hue: Float = 0f
 
     private val saturation: Float = 0.8f
+    private val alpha: Int = 150
 
     override fun init(): CustomDrawableManager {
         circleDuration = startCircleDuration
@@ -47,7 +48,7 @@ class InfiniteCompositeCircleDrawableManager(
             radius,
             circleDuration,
             Color.HSVToColor(floatArrayOf(hue, saturation, 1f)),
-            Color.HSVToColor(150, floatArrayOf(hue, saturation, 1f))
+            Color.HSVToColor(alpha, floatArrayOf(hue, saturation, 1f))
         )
     }
 
@@ -78,7 +79,7 @@ class InfiniteCompositeCircleDrawableManager(
 
     private fun updateTimers() {
         if (circleDuration > minCircleDuration) {
-            val updatedCircleDuration = circleDuration - (circleDuration / 30L)
+            val updatedCircleDuration = circleDuration - (circleDuration / 40L)
             circleDuration = if (updatedCircleDuration >= minCircleDuration) {
                 updatedCircleDuration
             } else {
@@ -86,7 +87,7 @@ class InfiniteCompositeCircleDrawableManager(
             }
         }
         if (circleInterval > minCircleInterval) {
-            val updatedCircleInterval = circleInterval - (circleInterval / 30L)
+            val updatedCircleInterval = circleInterval - (circleInterval / 40L)
             circleInterval = if (updatedCircleInterval >= minCircleInterval) {
                 updatedCircleInterval
             } else {
