@@ -7,11 +7,11 @@ import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Handler
 import android.os.Looper
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import androidx.lifecycle.LifecycleOwner
+import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.example.touchreflex.R
 import com.example.touchreflex.db.GameMode
 import com.example.touchreflex.db.HighScoreItem
@@ -56,7 +56,11 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     private lateinit var highScoreViewModel: HighScoreViewModel
 
+    private var gestureDetector: GestureDetectorCompat =
+        GestureDetectorCompat(context, CustomGestureListener(this))
+
     init {
+        setBackgroundColor(resources.getColor(R.color.grey, null))
         startTextManager =
             InfoTextDrawableManager(
                 arrayListOf(
@@ -66,7 +70,6 @@ class ReflexAnimationView(context: Context) : View(context) {
                     )
                 )
             )
-
         restartTextManager =
             InfoTextDrawableManager(
                 arrayListOf(
@@ -76,7 +79,6 @@ class ReflexAnimationView(context: Context) : View(context) {
                     )
                 )
             )
-
         scoreInfoText = SimpleScoreInfoText(
             this,
             totalScore.toString()
@@ -87,7 +89,6 @@ class ReflexAnimationView(context: Context) : View(context) {
                     scoreInfoText
                 )
             )
-
         circleManager = InfiniteCompositeCircleDrawableManager(
             this,
             object : ReflexAnimationCallback {
@@ -100,7 +101,6 @@ class ReflexAnimationView(context: Context) : View(context) {
                 }
             }
         )
-
         soundPool = SoundPool.Builder()
             .setMaxStreams(3)
             .setAudioAttributes(
@@ -165,31 +165,11 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val touchX = event.x
-        val touchY = event.y
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-                // only in the active game state, so the clicking/touching is reactive
-                if (state == GAME) {
-                    circleManager?.onTouch(touchX, touchY)
-                }
-            }
-            MotionEvent.ACTION_UP -> {
-                // don't catch accidental navigation swipes if user wants to exit the app or go back
-                when (state) {
-                    START -> {
-                        initGame()
-                    }
-                    RESTART -> {
-                        initGame()
-                    }
-                    else -> {
-                        // nothing
-                    }
-                }
-            }
+        return if (gestureDetector.onTouchEvent(event)) {
+            true
+        } else {
+            super.onTouchEvent(event)
         }
-        return true
     }
 
     private fun initGame() {
@@ -225,6 +205,33 @@ class ReflexAnimationView(context: Context) : View(context) {
         highScoreInfoText?.text = "High Score: $highScore"
 
         scoreInfoText.text = "Total Score: $totalScore"
+    }
+
+    private class CustomGestureListener(val viewCallback: ReflexAnimationView) :
+        GestureDetector.SimpleOnGestureListener() {
+        override fun onDown(e: MotionEvent): Boolean {
+            // only in the active game state, so the clicking/touching is reactive
+            if (viewCallback.state == GAME) {
+                viewCallback.circleManager?.onTouch(e.x, e.y)
+            }
+            return true
+        }
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            // don't catch accidental navigation swipes if user wants to exit the app or go back
+            when (viewCallback.state) {
+                START -> {
+                    viewCallback.initGame()
+                }
+                RESTART -> {
+                    viewCallback.initGame()
+                }
+                else -> {
+                    // nothing
+                }
+            }
+            return true
+        }
     }
 
 }
