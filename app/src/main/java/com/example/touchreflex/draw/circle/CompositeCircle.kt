@@ -4,26 +4,27 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.core.content.res.ResourcesCompat
-import com.example.touchreflex.R
-import com.example.touchreflex.draw.ReverseInterpolator
 import com.example.touchreflex.draw.CustomDrawable
 import com.example.touchreflex.draw.CustomDrawableManager
+import com.example.touchreflex.draw.ReverseInterpolator
 import com.example.touchreflex.utils.Utils
 
 data class CompositeCircle(
-    val circleManager: CustomDrawableManager,
-    val parentView: View,
-    val xCenter: Float,
-    val yCenter: Float,
-    var radius: Float,
-    val duration: Long,
-    val colorFill: Int? = null,
-    val colorStroke: Int? = null
+    private val circleManager: CustomDrawableManager,
+    private val parentView: View,
+    private val xCenter: Float,
+    private val yCenter: Float,
+    private var radius: Float,
+    private val duration: Long,
+    private val hue: Float
 ) : CustomDrawable {
+
+    private val saturation: Float = 0.5f
+    private val luminosity: Float = 0.5f
 
     private val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -41,18 +42,14 @@ data class CompositeCircle(
         paintFill.style = Paint.Style.FILL
         paintStroke.isDither = true
         paintStroke.style = Paint.Style.FILL
-        initColors()
+        setColors()
     }
 
-    private fun initColors() {
+    private fun setColors(modifier: Float = 0f) {
         paintFill.color =
-            colorFill ?: ResourcesCompat.getColor(
-                parentView.resources, R.color.circle_fill, null
-            )
+            Color.HSVToColor(floatArrayOf(hue, saturation + modifier, luminosity + modifier))
         paintStroke.color =
-            colorStroke ?: ResourcesCompat.getColor(
-                parentView.resources, R.color.circle_stroke, null
-            )
+            Color.HSVToColor(150, floatArrayOf(hue, saturation + modifier, luminosity + modifier))
     }
 
     private fun initAnimator() {
@@ -60,7 +57,10 @@ data class CompositeCircle(
         animator?.duration = Utils.nextLongWithMargin(duration)
         animator?.interpolator = AccelerateDecelerateInterpolator()
         animator?.addUpdateListener {
-            radius = it.animatedValue as Float
+            val value = it.animatedValue as Float
+            val modifier = (1 - saturation) * (value / 100)
+            radius = value
+            setColors(modifier)
             parentView.invalidate()
         }
         animator?.addListener(object : AnimatorListenerAdapter() {
@@ -87,7 +87,6 @@ data class CompositeCircle(
     override fun onDraw(canvas: Canvas) {
         canvas.drawCircle(xCenter, yCenter, radius, paintStroke)
         canvas.drawCircle(xCenter, yCenter, radius - (radius * 0.25f), paintFill)
-        parentView.invalidate()
     }
 
     override fun onDisable() {

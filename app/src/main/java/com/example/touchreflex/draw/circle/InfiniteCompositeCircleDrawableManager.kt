@@ -1,14 +1,13 @@
 package com.example.touchreflex.draw.circle
 
 import android.graphics.Canvas
-import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
-import java.util.LinkedList
+import java.util.*
 
 class InfiniteCompositeCircleDrawableManager(
     private val parentView: View,
@@ -25,8 +24,6 @@ class InfiniteCompositeCircleDrawableManager(
     private var circleDuration: Long = startCircleDuration
     private var circleInterval: Long = startCircleInterval
     private var hue: Float = 0f
-
-    private val saturation: Float = 0.8f
 
     override fun init(): CustomDrawableManager {
         circleDuration = startCircleDuration
@@ -46,8 +43,7 @@ class InfiniteCompositeCircleDrawableManager(
             Utils.nextFloat(radius, parentView.height.toFloat() - radius),
             radius,
             circleDuration,
-            Color.HSVToColor(floatArrayOf(hue, saturation, 1f)),
-            Color.HSVToColor(150, floatArrayOf(hue, saturation, 1f))
+            hue
         )
     }
 
