@@ -3,4 +3,6 @@
     <string name="start_game">START GAME</string>
     <string name="restart_game">RESTART GAME</string>
     <string name="game_over">GAME OVER</string>
+    <string name="info_high_score">High Score: %1$d</string>
+    <string name="info_total_score">Total Score %1$d</string>
 </resources>

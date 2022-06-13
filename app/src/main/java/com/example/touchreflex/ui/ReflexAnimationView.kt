@@ -139,7 +139,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             val yPos = 250f
             highScoreInfoText = SimpleInfoText(
                 this,
-                "High Score: $highScore",
+                context.getString(R.string.info_high_score, highScore),
                 true,
                 xPos,
                 yPos
@@ -202,9 +202,8 @@ class ReflexAnimationView(context: Context) : View(context) {
             highScoreViewModel.insert(HighScoreItem(GameMode.DEFAULT, highScore))
         }
         highScoreInfoText?.isIgnored = false
-        highScoreInfoText?.text = "High Score: $highScore"
-
-        scoreInfoText.text = "Total Score: $totalScore"
+        highScoreInfoText?.text = context.getString(R.string.info_high_score, highScore)
+        scoreInfoText.text = context.getString(R.string.info_total_score, totalScore)
     }
 
     private class CustomGestureListener(val viewCallback: ReflexAnimationView) :
