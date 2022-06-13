@@ -15,14 +15,14 @@ import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.utils.Utils
 
 data class CompositeCircle(
-    val circleManager: CustomDrawableManager,
-    val parentView: View,
-    val xCenter: Float,
-    val yCenter: Float,
-    var radius: Float,
-    val duration: Long,
-    val colorFill: Int? = null,
-    val colorStroke: Int? = null
+    private val circleManager: CustomDrawableManager,
+    private val parentView: View,
+    private val xCenter: Float,
+    private val yCenter: Float,
+    private var radius: Float,
+    private val duration: Long,
+    private val colorFill: Int? = null,
+    private val colorStroke: Int? = null
 ) : CustomDrawable {
 
     private val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -87,7 +87,6 @@ data class CompositeCircle(
     override fun onDraw(canvas: Canvas) {
         canvas.drawCircle(xCenter, yCenter, radius, paintStroke)
         canvas.drawCircle(xCenter, yCenter, radius - (radius * 0.25f), paintFill)
-        parentView.invalidate()
     }
 
     override fun onDisable() {

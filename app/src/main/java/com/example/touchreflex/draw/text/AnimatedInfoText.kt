@@ -17,12 +17,13 @@ class AnimatedInfoText(
     private var invert = false
 
     init {
+        this.textSize = 120f
         initAnimator()
     }
 
     private fun initAnimator() {
-        animator = ValueAnimator.ofFloat(0f, 70f)
-        animator?.duration = 1000L
+        animator = ValueAnimator.ofFloat(0f, 40f)
+        animator?.duration = 1300L
         animator?.interpolator = AccelerateDecelerateInterpolator()
         animator?.addUpdateListener {
             paint.textSize = textSize + it.animatedValue as Float
@@ -53,7 +54,6 @@ class AnimatedInfoText(
         val xPos = canvas.width / 2f
         val yPos = (canvas.height / 2f) - ((paint.descent() + paint.ascent()) / 2)
         canvas.drawText(text, xPos, yPos, paint)
-        parentView.invalidate()
     }
 
     override fun onDisable() {

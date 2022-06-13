@@ -20,7 +20,7 @@ import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
 import com.example.touchreflex.draw.text.AnimatedInfoText
 import com.example.touchreflex.draw.text.InfoTextDrawableManager
-import com.example.touchreflex.draw.text.SimpleScoreInfoText
+import com.example.touchreflex.draw.text.SimpleInfoText
 import com.example.touchreflex.ui.ReflexAnimationView.State.*
 
 class ReflexAnimationView(context: Context) : View(context) {
@@ -49,8 +49,8 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var startTextManager: CustomDrawableManager? = null
     private var restartTextManager: CustomDrawableManager? = null
     private var scoreTextManager: InfoTextDrawableManager? = null
-    private var scoreInfoText: SimpleScoreInfoText
-    private var highScoreInfoText: SimpleScoreInfoText? = null
+    private var scoreInfoText: SimpleInfoText
+    private var highScoreInfoText: SimpleInfoText? = null
     private var totalScore = 0
     private var highScore = 0
 
@@ -79,7 +79,7 @@ class ReflexAnimationView(context: Context) : View(context) {
                     )
                 )
             )
-        scoreInfoText = SimpleScoreInfoText(
+        scoreInfoText = SimpleInfoText(
             this,
             totalScore.toString()
         )
@@ -137,7 +137,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         if (highScoreInfoText == null) {
             val xPos = this.width / 2f
             val yPos = 250f
-            highScoreInfoText = SimpleScoreInfoText(
+            highScoreInfoText = SimpleInfoText(
                 this,
                 "High Score: $highScore",
                 true,

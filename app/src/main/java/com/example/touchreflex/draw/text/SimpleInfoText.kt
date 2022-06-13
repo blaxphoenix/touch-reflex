@@ -3,8 +3,8 @@ package com.example.touchreflex.draw.text
 import android.graphics.Canvas
 import android.view.View
 
-class SimpleScoreInfoText(
-    private val parentView: View,
+class SimpleInfoText(
+    parentView: View,
     var text: String,
     var isIgnored: Boolean = false,
     private val x: Float? = null,
@@ -22,7 +22,6 @@ class SimpleScoreInfoText(
                 val yPos = textSize - ((paint.descent() + paint.ascent()) / 2)
                 canvas.drawText(text, xPos, yPos, paint)
             }
-            parentView.invalidate()
         }
     }
 

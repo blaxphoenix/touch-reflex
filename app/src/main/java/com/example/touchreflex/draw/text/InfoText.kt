@@ -13,7 +13,7 @@ abstract class InfoText(
 ) : CustomDrawable {
 
     protected val paint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
-    protected val textSize: Float = 100f
+    protected var textSize: Float = 100f
 
     init {
         initPaint()
