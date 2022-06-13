@@ -3,8 +3,6 @@ package com.example.touchreflex.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
-import android.media.AudioAttributes
-import android.media.SoundPool
 import android.os.Handler
 import android.os.Looper
 import android.view.GestureDetector
@@ -23,6 +21,8 @@ import com.example.touchreflex.draw.text.AnimatedInfoText
 import com.example.touchreflex.draw.text.InfoTextDrawableManager
 import com.example.touchreflex.draw.text.SimpleInfoText
 import com.example.touchreflex.ui.ReflexAnimationView.State.*
+import com.example.touchreflex.utils.AudioService
+import com.example.touchreflex.utils.MusicType
 
 /**
  * The basic reflex animation game view.
@@ -43,10 +43,6 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val soundPool: SoundPool
-    private val startSoundId: Int
-    private val stopSoundId: Int
-    private val touchSoundId: Int
 
     private var state: State = START
 
@@ -82,6 +78,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var highScore = 0
 
     private lateinit var highScoreViewModel: HighScoreViewModel
+    private lateinit var audioService: AudioService
 
     private var gestureDetector: GestureDetectorCompat =
         GestureDetectorCompat(context, CustomGestureListener(this))
@@ -110,23 +107,14 @@ class ReflexAnimationView(context: Context) : View(context) {
                 }
             }
         )
-        soundPool = SoundPool.Builder()
-            .setMaxStreams(3)
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .build()
-            )
-            .build()
-
-        touchSoundId = soundPool.load(context, R.raw.glass_002, 1)
-        startSoundId = soundPool.load(context, R.raw.confirmation_002, 1)
-        stopSoundId = soundPool.load(context, R.raw.error_006, 1)
     }
 
-    fun setUpView(highScoreViewModel: HighScoreViewModel): ReflexAnimationView {
+    fun setUpView(
+        highScoreViewModel: HighScoreViewModel,
+        audioService: AudioService
+    ): ReflexAnimationView {
         this.highScoreViewModel = highScoreViewModel
+        this.audioService = audioService
         return this
     }
 
@@ -143,6 +131,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         startTextManager.init()
 
+        // TODO: move these out?
         if (highScoreInfoText == null) {
             val xPos = this.width / 2f
             val yPos = 250f
@@ -220,7 +209,11 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun initGame() {
-        soundPool.play(startSoundId, 1f, 1f, 0, 0, 1f)
+        audioService
+            .stop()
+            .playConfirmSound()
+            .switchMusic(MusicType.DEFAULT_GAME)
+            .start()
         state = GAME
         totalScore = 0
         scoreInfoText.text = totalScore.toString()
@@ -230,26 +223,31 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun scored() {
-        soundPool.play(touchSoundId, 1f, 1f, 0, 0, 1f)
+        audioService.playTouchSound()
         totalScore++
         scoreInfoText.text = totalScore.toString()
     }
 
     private fun gameOver() {
-        soundPool.play(stopSoundId, 1f, 1f, 0, 0, 1f)
         mainHandler.postDelayed({
             state = RESTART
         }, 750L)
 
         state = RESTART_DELAY
         restartTextManager.init()
+        audioService
+            .stop()
+            .switchMusic(MusicType.MENU)
+            .start()
 
         if (totalScore > highScore) {
+            audioService.playHighScoreSound()
             highScore = totalScore
             highScoreViewModel.insert(HighScoreItem(GameMode.DEFAULT, highScore))
             restartGameNewHighScoreInfoText?.isIgnored = false
             restartGameMotivationInfoText?.isIgnored = true
         } else {
+            audioService.playGameOverSound()
             restartGameNewHighScoreInfoText?.isIgnored = true
             restartGameMotivationInfoText?.isIgnored = false
         }
@@ -270,6 +268,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             RESTART, RESTART_DELAY -> {
                 circleManager.onDraw(canvas)
                 restartTextManager.onDraw(canvas)
+                // TODO: remove or improve
                 scoreTextManager.onDraw(canvas)
             }
         }
