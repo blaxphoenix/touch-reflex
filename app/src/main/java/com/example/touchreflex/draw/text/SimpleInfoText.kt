@@ -2,6 +2,8 @@ package com.example.touchreflex.draw.text
 
 import android.graphics.Canvas
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
+import com.example.touchreflex.R
 
 class SimpleInfoText(
     parentView: View,
@@ -9,8 +11,9 @@ class SimpleInfoText(
     var isIgnored: Boolean = false,
     private var x: Float? = null,
     private var y: Float? = null,
-    textSize: Float = 100f
-) : InfoText(parentView, textSize) {
+    textSize: Float = 100f,
+    color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
+) : InfoText(parentView, textSize, color) {
 
     override fun onStartDrawing() {}
 

@@ -10,6 +10,7 @@ import android.os.Looper
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.Observer
 import com.example.touchreflex.R
@@ -54,7 +55,8 @@ class ReflexAnimationView(context: Context) : View(context) {
         arrayListOf(
             AnimatedInfoText(
                 this,
-                resources.getString(R.string.start_game)
+                resources.getString(R.string.start_game),
+                color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
             )
         )
     )
@@ -62,7 +64,8 @@ class ReflexAnimationView(context: Context) : View(context) {
         arrayListOf(
             AnimatedInfoText(
                 this,
-                resources.getString(R.string.restart_game)
+                resources.getString(R.string.restart_game),
+                color = ResourcesCompat.getColor(this.resources, R.color.red_heavy_1, null)
             )
         )
     )
@@ -71,8 +74,9 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var highScoreInfoText: SimpleInfoText? = null
     private var gameDescriptionInfoText1: SimpleInfoText? = null
     private var gameDescriptionInfoText2: SimpleInfoText? = null
-    private var restartGameNewHighScore: SimpleInfoText? = null
+    private var restartGameNewHighScoreInfoText: SimpleInfoText? = null
     private var restartGameMotivationInfoText: SimpleInfoText? = null
+    private var restartGameGameOverInfoText: SimpleInfoText? = null
 
     private var totalScore = 0
     private var highScore = 0
@@ -85,7 +89,8 @@ class ReflexAnimationView(context: Context) : View(context) {
     init {
         scoreInfoText = SimpleInfoText(
             this,
-            totalScore.toString()
+            totalScore.toString(),
+            color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
         )
         scoreTextManager =
             InfoTextDrawableManager(
@@ -146,7 +151,8 @@ class ReflexAnimationView(context: Context) : View(context) {
                 context.getString(R.string.info_high_score, highScore),
                 true,
                 xPos,
-                yPos
+                yPos,
+                color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
             )
             scoreTextManager.elements.add(highScoreInfoText!!)
         }
@@ -159,7 +165,8 @@ class ReflexAnimationView(context: Context) : View(context) {
                 context.getString(R.string.game_description_start_game_1),
                 x = xPos,
                 y = yPos,
-                textSize = 60f
+                textSize = 60f,
+                color = ResourcesCompat.getColor(this.resources, R.color.purple_light_2, null)
             )
             yPos += 80f
             gameDescriptionInfoText2 = SimpleInfoText(
@@ -167,22 +174,34 @@ class ReflexAnimationView(context: Context) : View(context) {
                 context.getString(R.string.game_description_start_game_2),
                 x = xPos,
                 y = yPos,
-                textSize = 60f
+                textSize = 60f,
+                color = ResourcesCompat.getColor(this.resources, R.color.purple_light_2, null)
             )
             startTextManager.elements.add(gameDescriptionInfoText1!!)
             startTextManager.elements.add(gameDescriptionInfoText2!!)
         }
 
-        if (restartGameNewHighScore == null && restartGameMotivationInfoText == null) {
+        if (restartGameNewHighScoreInfoText == null && restartGameMotivationInfoText == null) {
             val xPos = this.width / 2f
-            val yPos = this.height / 1.25f
-            restartGameNewHighScore = SimpleInfoText(
+            var yPos = this.height / 1.25f
+            restartGameGameOverInfoText = SimpleInfoText(
+                this,
+                context.getString(R.string.game_over),
+                false,
+                xPos,
+                yPos,
+                100f,
+                color = ResourcesCompat.getColor(this.resources, R.color.red, null)
+            )
+            yPos += 120f
+            restartGameNewHighScoreInfoText = SimpleInfoText(
                 this,
                 context.getString(R.string.restart_game_new_high_score),
                 true,
                 xPos,
                 yPos,
-                100f
+                100f,
+                color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
             )
             restartGameMotivationInfoText = SimpleInfoText(
                 this,
@@ -190,9 +209,11 @@ class ReflexAnimationView(context: Context) : View(context) {
                 true,
                 xPos,
                 yPos,
-                100f
+                100f,
+                color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
             )
-            restartTextManager.elements.add(restartGameNewHighScore!!)
+            restartTextManager.elements.add(restartGameGameOverInfoText!!)
+            restartTextManager.elements.add(restartGameNewHighScoreInfoText!!)
             restartTextManager.elements.add(restartGameMotivationInfoText!!)
         }
 
@@ -226,10 +247,10 @@ class ReflexAnimationView(context: Context) : View(context) {
         if (totalScore > highScore) {
             highScore = totalScore
             highScoreViewModel.insert(HighScoreItem(GameMode.DEFAULT, highScore))
-            restartGameNewHighScore?.isIgnored = false
+            restartGameNewHighScoreInfoText?.isIgnored = false
             restartGameMotivationInfoText?.isIgnored = true
         } else {
-            restartGameNewHighScore?.isIgnored = true
+            restartGameNewHighScoreInfoText?.isIgnored = true
             restartGameMotivationInfoText?.isIgnored = false
         }
         highScoreInfoText?.isIgnored = false
