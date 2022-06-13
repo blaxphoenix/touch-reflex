@@ -16,21 +16,23 @@ class InfiniteCompositeCircleDrawableManager(
 
     private val circles: LinkedList<CompositeCircle> = LinkedList()
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val radius: Float = 80f
-    private val startCircleDuration: Long = 2000L
-    private val startCircleInterval: Long = 2000L
-    private val minCircleDuration: Long = 1000L
-    private val minCircleInterval: Long = 1150L
+    private val radius: Float = 90f
+    private val startCircleDuration: Long = 3500L
+    private val startCircleInterval: Long = 1750L
+    private val minCircleDuration: Long = 2250L
+    private val minCircleInterval: Long = 750L
     private var circleDuration: Long = startCircleDuration
     private var circleInterval: Long = startCircleInterval
     private var hue: Float = 0f
+
+    private val marginModifier = 1.10f
 
     override fun init(): CustomDrawableManager {
         circleDuration = startCircleDuration
         circleInterval = startCircleInterval
         postDelayed(buildCompositeCircle(), initialDelay = 250)
-        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval / 2)
-        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval / 4)
+        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval)
+        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval * 2)
         return this
     }
 
@@ -39,8 +41,8 @@ class InfiniteCompositeCircleDrawableManager(
         return CompositeCircle(
             this,
             parentView,
-            Utils.nextFloat(radius, parentView.width.toFloat() - radius),
-            Utils.nextFloat(radius, parentView.height.toFloat() - radius),
+            Utils.nextFloat(radius * marginModifier, parentView.width.toFloat() - (radius * marginModifier)),
+            Utils.nextFloat(radius * marginModifier, parentView.height.toFloat() - (radius * marginModifier)),
             radius,
             circleDuration,
             hue
@@ -74,7 +76,11 @@ class InfiniteCompositeCircleDrawableManager(
 
     private fun updateTimers() {
         if (circleDuration > minCircleDuration) {
-            val updatedCircleDuration = circleDuration - (circleDuration / 40L)
+            var modifier = 80L
+            if (minCircleDuration / circleDuration <= 0.5) {
+                modifier = 120L
+            }
+            val updatedCircleDuration = circleDuration - (circleDuration / modifier)
             circleDuration = if (updatedCircleDuration >= minCircleDuration) {
                 updatedCircleDuration
             } else {
@@ -82,7 +88,11 @@ class InfiniteCompositeCircleDrawableManager(
             }
         }
         if (circleInterval > minCircleInterval) {
-            val updatedCircleInterval = circleInterval - (circleInterval / 40L)
+            var modifier = 60L
+            if (minCircleInterval / circleInterval <= 0.5) {
+                modifier = 120L
+            }
+            val updatedCircleInterval = circleInterval - (circleInterval / modifier)
             circleInterval = if (updatedCircleInterval >= minCircleInterval) {
                 updatedCircleInterval
             } else {
