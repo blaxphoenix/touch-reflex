@@ -6,12 +6,15 @@ import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.content.res.ResourcesCompat
+import com.example.touchreflex.R
 import com.example.touchreflex.draw.ReverseInterpolator
 
 class AnimatedInfoText(
     private val parentView: View,
-    private val text: String
-) : InfoText(parentView) {
+    private val text: String,
+    color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
+) : InfoText(parentView, color = color) {
 
     private var animator: ValueAnimator? = null
     private var invert = false
