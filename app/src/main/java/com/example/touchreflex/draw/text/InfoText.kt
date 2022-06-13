@@ -9,11 +9,11 @@ import com.example.touchreflex.draw.CustomDrawable
 import com.example.touchreflex.utils.FontCache
 
 abstract class InfoText(
-    private val parentView: View
+    private val parentView: View,
+    protected var textSize: Float = 100f
 ) : CustomDrawable {
 
     protected val paint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
-    protected var textSize: Float = 100f
 
     init {
         initPaint()

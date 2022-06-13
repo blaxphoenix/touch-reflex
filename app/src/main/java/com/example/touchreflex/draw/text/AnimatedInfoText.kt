@@ -15,6 +15,8 @@ class AnimatedInfoText(
 
     private var animator: ValueAnimator? = null
     private var invert = false
+    private var x: Float? = null
+    private var y: Float? = null
 
     init {
         this.textSize = 120f
@@ -51,9 +53,15 @@ class AnimatedInfoText(
     }
 
     override fun onDraw(canvas: Canvas) {
-        val xPos = canvas.width / 2f
-        val yPos = (canvas.height / 2f) - ((paint.descent() + paint.ascent()) / 2)
-        canvas.drawText(text, xPos, yPos, paint)
+        if (x != null && y != null) {
+            canvas.drawText(text, x!!, y!!, paint)
+        } else {
+            val xPos = canvas.width / 2f
+            val yPos = (canvas.height / 2f) - ((paint.descent() + paint.ascent()) / 2)
+            x = xPos
+            y = yPos
+            canvas.drawText(text, xPos, yPos, paint)
+        }
     }
 
     override fun onDisable() {

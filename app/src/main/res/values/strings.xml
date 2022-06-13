@@ -5,4 +5,8 @@
     <string name="game_over">GAME OVER</string>
     <string name="info_high_score">High Score: %1$d</string>
     <string name="info_total_score">Total Score %1$d</string>
+    <string name="game_description_start_game_1">Tap all bubbles before they disappear</string>
+    <string name="game_description_start_game_2">Reach your highest score</string>
+    <string name="restart_game_new_high_score">New High Score Reached!</string>
+    <string name="restart_game_motivation">Maybe next time…</string>
 </resources>
