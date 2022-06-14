@@ -9,4 +9,5 @@
     <string name="game_description_start_game_2">Or the game is over!</string>
     <string name="restart_game_new_high_score">NEW HIGH SCORE!</string>
     <string name="restart_game_motivation">Maybe next time…</string>
+    <string name="back_button_snack_bar">Press back again to leave</string>
 </resources>

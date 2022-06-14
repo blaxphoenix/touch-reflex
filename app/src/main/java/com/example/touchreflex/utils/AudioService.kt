@@ -12,6 +12,8 @@ class AudioService(context: Context) {
     private val cache: Hashtable<MusicType, ArrayList<MediaPlayer>> = Hashtable()
     private var isPaused: Boolean = false
     private var currentMediaPlayer: MediaPlayer? = null
+    var currentMusicType: MusicType? = null
+        private set
 
     private val soundPool: SoundPool = SoundPool.Builder()
         .setMaxStreams(3)
@@ -88,7 +90,11 @@ class AudioService(context: Context) {
     }
 
     fun switchMusic(musicType: MusicType): AudioService {
-        currentMediaPlayer = cache[musicType]?.random()
+        if (currentMusicType != musicType) {
+            stop()
+            currentMusicType = musicType
+            currentMediaPlayer = cache[musicType]?.random()
+        }
         return this
     }
 

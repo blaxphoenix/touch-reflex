@@ -20,8 +20,9 @@ import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManage
 import com.example.touchreflex.draw.text.AnimatedInfoText
 import com.example.touchreflex.draw.text.InfoTextDrawableManager
 import com.example.touchreflex.draw.text.SimpleInfoText
-import com.example.touchreflex.ui.ReflexAnimationView.State.*
 import com.example.touchreflex.utils.AudioService
+import com.example.touchreflex.utils.GameState
+import com.example.touchreflex.utils.GameState.*
 import com.example.touchreflex.utils.MusicType
 
 /**
@@ -29,11 +30,8 @@ import com.example.touchreflex.utils.MusicType
  */
 class ReflexAnimationView(context: Context) : View(context) {
 
-    private enum class State {
-        START, GAME, RESTART_DELAY, RESTART
-    }
-
-    private var state: State = START
+    var state: GameState = START
+        private set
     private val mainHandler = Handler(Looper.getMainLooper())
 
     private lateinit var highScoreViewModel: HighScoreViewModel
@@ -202,7 +200,6 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     private fun initGame() {
         audioService
-            .stop()
             .playConfirmSound()
             .switchMusic(MusicType.DEFAULT_GAME)
             .start()
@@ -228,7 +225,6 @@ class ReflexAnimationView(context: Context) : View(context) {
         state = RESTART_DELAY
         restartTextManager.init()
         audioService
-            .stop()
             .switchMusic(MusicType.MENU)
             .start()
 
@@ -272,6 +268,17 @@ class ReflexAnimationView(context: Context) : View(context) {
         } else {
             super.onTouchEvent(event)
         }
+    }
+
+    fun onBackPressed() {
+        println(state)
+        if (state == GAME) {
+            circleManager.onStop()
+        }
+        state = START
+        audioService
+            .switchMusic(MusicType.MENU)
+            .start()
     }
 
     private class CustomGestureListener(val viewCallback: ReflexAnimationView) :
