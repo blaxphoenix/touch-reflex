@@ -8,7 +8,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
 import com.example.touchreflex.R
-import com.example.touchreflex.draw.ReverseInterpolator
+import com.example.touchreflex.utils.ReverseInterpolator
 
 class AnimatedInfoText(
     private val parentView: View,

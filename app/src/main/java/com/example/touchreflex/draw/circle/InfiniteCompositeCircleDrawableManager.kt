@@ -41,8 +41,14 @@ class InfiniteCompositeCircleDrawableManager(
         return CompositeCircle(
             this,
             parentView,
-            Utils.nextFloat(radius * marginModifier, parentView.width.toFloat() - (radius * marginModifier)),
-            Utils.nextFloat(radius * marginModifier, parentView.height.toFloat() - (radius * marginModifier)),
+            Utils.nextFloat(
+                radius * marginModifier,
+                parentView.width.toFloat() - (radius * marginModifier)
+            ),
+            Utils.nextFloat(
+                radius * marginModifier,
+                parentView.height.toFloat() - (radius * marginModifier)
+            ),
             radius,
             circleDuration,
             hue
@@ -121,14 +127,17 @@ class InfiniteCompositeCircleDrawableManager(
     }
 
     override fun onPause() {
-        circles.forEach { it.pause() }
+        pauseCircles()
         mainHandler.removeCallbacksAndMessages(null)
         callback?.onGameOver()
     }
 
     override fun onStop() {
+        pauseCircles()
         circles.clear()
         mainHandler.removeCallbacksAndMessages(null)
     }
+
+    private fun pauseCircles() = circles.forEach { it.pause() }
 
 }
