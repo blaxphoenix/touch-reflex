@@ -33,49 +33,8 @@ class ReflexAnimationView(context: Context) : View(context) {
         START, GAME, RESTART_DELAY, RESTART
     }
 
-    private val highScoreObserver = Observer<MutableList<HighScoreItem>> { list ->
-        list?.let {
-            val item = list.firstOrNull { it.gameMode == GameMode.DEFAULT }
-            if (item != null) {
-                highScore = item.score
-            }
-        }
-    }
-
-    private val mainHandler = Handler(Looper.getMainLooper())
-
     private var state: State = START
-
-    private var circleManager: CustomDrawableManager
-    private var startTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
-        arrayListOf(
-            AnimatedInfoText(
-                this,
-                resources.getString(R.string.start_game),
-                color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
-            )
-        )
-    )
-    private var restartTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
-        arrayListOf(
-            AnimatedInfoText(
-                this,
-                resources.getString(R.string.restart_game),
-                color = ResourcesCompat.getColor(this.resources, R.color.red_heavy_1, null)
-            )
-        )
-    )
-    private var scoreTextManager: InfoTextDrawableManager
-    private var scoreInfoText: SimpleInfoText
-    private var highScoreInfoText: SimpleInfoText? = null
-    private var gameDescriptionInfoText1: SimpleInfoText? = null
-    private var gameDescriptionInfoText2: SimpleInfoText? = null
-    private var restartGameNewHighScoreInfoText: SimpleInfoText? = null
-    private var restartGameMotivationInfoText: SimpleInfoText? = null
-    private var restartGameGameOverInfoText: SimpleInfoText? = null
-
-    private var totalScore = 0
-    private var highScore = 0
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     private lateinit var highScoreViewModel: HighScoreViewModel
     private lateinit var audioService: AudioService
@@ -83,30 +42,120 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var gestureDetector: GestureDetectorCompat =
         GestureDetectorCompat(context, CustomGestureListener(this))
 
-    init {
-        scoreInfoText = SimpleInfoText(
-            this,
-            totalScore.toString(),
-            color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
-        )
-        scoreTextManager =
-            InfoTextDrawableManager(
-                arrayListOf(
-                    scoreInfoText
-                )
-            )
-        circleManager = InfiniteCompositeCircleDrawableManager(
-            this,
-            object : ReflexAnimationCallback {
-                override fun onScored() {
-                    scored()
-                }
+    private var totalScore = 0
+    private var highScore = 0
 
-                override fun onGameOver() {
-                    gameOver()
-                }
+    private val circleManager: CustomDrawableManager = InfiniteCompositeCircleDrawableManager(
+        this,
+        object : ReflexAnimationCallback {
+            override fun onScored() {
+                scored()
             }
+
+            override fun onGameOver() {
+                gameOver()
+            }
+        }
+    )
+
+    // start game text
+    private val startHighScoreInfoText: SimpleInfoText = SimpleInfoText(
+        this,
+        highScore.toString(),
+        color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
+    )
+    private val startDescriptionInfoText1: SimpleInfoText = SimpleInfoText(
+        this,
+        context.getString(R.string.game_description_start_game_1),
+        textSize = 60f,
+        color = ResourcesCompat.getColor(this.resources, R.color.purple_light_2, null)
+    )
+    private val startDescriptionInfoText2: SimpleInfoText = SimpleInfoText(
+        this,
+        context.getString(R.string.game_description_start_game_2),
+        textSize = 60f,
+        color = ResourcesCompat.getColor(this.resources, R.color.purple_light_2, null)
+    )
+    private val startTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
+        arrayListOf(
+            AnimatedInfoText(
+                this,
+                resources.getString(R.string.start_game),
+                color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
+            ),
+            startHighScoreInfoText,
+            startDescriptionInfoText1,
+            startDescriptionInfoText2
         )
+    )
+
+    // restart game text
+    private val restartCurrentScoreInfoText: SimpleInfoText = SimpleInfoText(
+        this,
+        context.getString(R.string.info_current_score, totalScore),
+        color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
+    )
+    private val restartHighScoreInfoText: SimpleInfoText = SimpleInfoText(
+        this,
+        context.getString(R.string.info_high_score, highScore),
+        color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
+    )
+    private val restartNewHighScoreInfoText: SimpleInfoText = SimpleInfoText(
+        this,
+        context.getString(R.string.game_over),
+        textSize = 100f,
+        color = ResourcesCompat.getColor(this.resources, R.color.red, null)
+    )
+    private val restartMotivationInfoText: SimpleInfoText = SimpleInfoText(
+        this,
+        context.getString(R.string.restart_game_new_high_score),
+        true,
+        textSize = 100f,
+        color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
+    )
+    private val restartGameOverInfoText: SimpleInfoText = SimpleInfoText(
+        this,
+        context.getString(R.string.restart_game_motivation),
+        true,
+        textSize = 100f,
+        color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
+    )
+    private val restartTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
+        arrayListOf(
+            AnimatedInfoText(
+                this,
+                resources.getString(R.string.restart_game),
+                color = ResourcesCompat.getColor(this.resources, R.color.red_heavy_1, null)
+            ),
+            restartCurrentScoreInfoText,
+            restartHighScoreInfoText,
+            restartNewHighScoreInfoText,
+            restartMotivationInfoText,
+            restartGameOverInfoText
+        )
+    )
+
+    // in game text
+    private val inGameCurrentScoreText: SimpleInfoText = SimpleInfoText(
+        this,
+        totalScore.toString(),
+        color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
+    )
+    private val inGameTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
+        arrayListOf(
+            inGameCurrentScoreText
+        )
+    )
+
+    private val highScoreObserver = Observer<MutableList<HighScoreItem>> { list ->
+        list?.let {
+            val item = list.firstOrNull { it.gameMode == GameMode.DEFAULT }
+            if (item != null) {
+                highScore = item.score
+                startHighScoreInfoText.text =
+                    context.getString(R.string.info_high_score, item.score)
+            }
+        }
     }
 
     fun setUpView(
@@ -121,6 +170,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         highScoreViewModel.allHighScoreItems.observeForever(highScoreObserver)
+        startTextManager.init()
     }
 
     override fun onDetachedFromWindow() {
@@ -130,82 +180,24 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         startTextManager.init()
+        setUpCoordinates()
+    }
 
-        // TODO: move these out?
-        if (highScoreInfoText == null) {
-            val xPos = this.width / 2f
-            val yPos = 250f
-            highScoreInfoText = SimpleInfoText(
-                this,
-                context.getString(R.string.info_high_score, highScore),
-                true,
-                xPos,
-                yPos,
-                color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
-            )
-            scoreTextManager.elements.add(highScoreInfoText!!)
-        }
-
-        if (gameDescriptionInfoText1 == null && gameDescriptionInfoText2 == null) {
-            val xPos = this.width / 2f
-            var yPos = this.height - 200f
-            gameDescriptionInfoText1 = SimpleInfoText(
-                this,
-                context.getString(R.string.game_description_start_game_1),
-                x = xPos,
-                y = yPos,
-                textSize = 60f,
-                color = ResourcesCompat.getColor(this.resources, R.color.purple_light_2, null)
-            )
-            yPos += 80f
-            gameDescriptionInfoText2 = SimpleInfoText(
-                this,
-                context.getString(R.string.game_description_start_game_2),
-                x = xPos,
-                y = yPos,
-                textSize = 60f,
-                color = ResourcesCompat.getColor(this.resources, R.color.purple_light_2, null)
-            )
-            startTextManager.elements.add(gameDescriptionInfoText1!!)
-            startTextManager.elements.add(gameDescriptionInfoText2!!)
-        }
-
-        if (restartGameNewHighScoreInfoText == null && restartGameMotivationInfoText == null) {
-            val xPos = this.width / 2f
-            var yPos = this.height / 1.25f
-            restartGameGameOverInfoText = SimpleInfoText(
-                this,
-                context.getString(R.string.game_over),
-                false,
-                xPos,
-                yPos,
-                100f,
-                color = ResourcesCompat.getColor(this.resources, R.color.red, null)
-            )
-            yPos += 120f
-            restartGameNewHighScoreInfoText = SimpleInfoText(
-                this,
-                context.getString(R.string.restart_game_new_high_score),
-                true,
-                xPos,
-                yPos,
-                100f,
-                color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
-            )
-            restartGameMotivationInfoText = SimpleInfoText(
-                this,
-                context.getString(R.string.restart_game_motivation),
-                true,
-                xPos,
-                yPos,
-                100f,
-                color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
-            )
-            restartTextManager.elements.add(restartGameGameOverInfoText!!)
-            restartTextManager.elements.add(restartGameNewHighScoreInfoText!!)
-            restartTextManager.elements.add(restartGameMotivationInfoText!!)
-        }
-
+    private fun setUpCoordinates() {
+        var xPos = this.width / 2f
+        var yPos = this.height - 200f
+        startDescriptionInfoText1.setNewCoordinates(xPos, yPos)
+        yPos += 80f
+        startDescriptionInfoText2.setNewCoordinates(xPos, yPos)
+        xPos = this.width / 2f
+        yPos = 250f
+        restartHighScoreInfoText.setNewCoordinates(xPos, yPos)
+        xPos = this.width / 2f
+        yPos = this.height / 1.25f
+        restartGameOverInfoText.setNewCoordinates(xPos, yPos)
+        yPos += 120f
+        restartNewHighScoreInfoText.setNewCoordinates(xPos, yPos)
+        restartMotivationInfoText.setNewCoordinates(xPos, yPos)
     }
 
     private fun initGame() {
@@ -216,8 +208,8 @@ class ReflexAnimationView(context: Context) : View(context) {
             .start()
         state = GAME
         totalScore = 0
-        scoreInfoText.text = totalScore.toString()
-        highScoreInfoText?.isIgnored = true
+        inGameCurrentScoreText.text = totalScore.toString()
+        restartHighScoreInfoText.isIgnored = true
         circleManager.onStop()
         circleManager.init()
     }
@@ -225,7 +217,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     private fun scored() {
         audioService.playTouchSound()
         totalScore++
-        scoreInfoText.text = totalScore.toString()
+        inGameCurrentScoreText.text = totalScore.toString()
     }
 
     private fun gameOver() {
@@ -244,16 +236,17 @@ class ReflexAnimationView(context: Context) : View(context) {
             audioService.playHighScoreSound()
             highScore = totalScore
             highScoreViewModel.insert(HighScoreItem(GameMode.DEFAULT, highScore))
-            restartGameNewHighScoreInfoText?.isIgnored = false
-            restartGameMotivationInfoText?.isIgnored = true
+            restartNewHighScoreInfoText.isIgnored = false
+            restartMotivationInfoText.isIgnored = true
         } else {
             audioService.playGameOverSound()
-            restartGameNewHighScoreInfoText?.isIgnored = true
-            restartGameMotivationInfoText?.isIgnored = false
+            restartNewHighScoreInfoText.isIgnored = true
+            restartMotivationInfoText.isIgnored = false
         }
-        highScoreInfoText?.isIgnored = false
-        highScoreInfoText?.text = context.getString(R.string.info_high_score, highScore)
-        scoreInfoText.text = context.getString(R.string.info_total_score, totalScore)
+        restartHighScoreInfoText.isIgnored = false
+        restartHighScoreInfoText.text = context.getString(R.string.info_high_score, highScore)
+        restartCurrentScoreInfoText.text =
+            context.getString(R.string.info_current_score, totalScore)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -263,13 +256,11 @@ class ReflexAnimationView(context: Context) : View(context) {
             }
             GAME -> {
                 circleManager.onDraw(canvas)
-                scoreTextManager.onDraw(canvas)
+                inGameTextManager.onDraw(canvas)
             }
             RESTART, RESTART_DELAY -> {
                 circleManager.onDraw(canvas)
                 restartTextManager.onDraw(canvas)
-                // TODO: remove or improve
-                scoreTextManager.onDraw(canvas)
             }
         }
     }

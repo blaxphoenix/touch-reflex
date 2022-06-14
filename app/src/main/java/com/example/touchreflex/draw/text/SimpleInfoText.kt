@@ -33,4 +33,9 @@ class SimpleInfoText(
 
     override fun onDisable() {}
 
+    fun setNewCoordinates(newX: Float, newY: Float) {
+        x = newX
+        y = newY
+    }
+
 }

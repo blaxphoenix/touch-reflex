@@ -10,7 +10,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.example.touchreflex.draw.CustomDrawable
 import com.example.touchreflex.draw.CustomDrawableManager
-import com.example.touchreflex.draw.ReverseInterpolator
+import com.example.touchreflex.utils.ReverseInterpolator
 import com.example.touchreflex.utils.Utils
 
 data class CompositeCircle(
