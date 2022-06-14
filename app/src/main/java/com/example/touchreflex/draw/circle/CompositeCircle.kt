@@ -16,13 +16,14 @@ import com.example.touchreflex.utils.Utils
 data class CompositeCircle(
     private val circleManager: CustomDrawableManager,
     private val parentView: View,
-    private val xCenter: Float,
-    private val yCenter: Float,
+    val xCenter: Float,
+    val yCenter: Float,
     private var radius: Float,
     private val duration: Long,
     private val hue: Float
 ) : CustomDrawable {
 
+    val animatorValue: Float = 100f
     private val saturation: Float = 0.5f
     private val luminosity: Float = 0.5f
 
@@ -53,7 +54,7 @@ data class CompositeCircle(
     }
 
     private fun initAnimator() {
-        animator = ValueAnimator.ofFloat(0f, 100f)
+        animator = ValueAnimator.ofFloat(0f, animatorValue)
         animator?.duration = Utils.nextLongWithMargin(duration)
         animator?.interpolator = AccelerateDecelerateInterpolator()
         animator?.addUpdateListener {
@@ -100,8 +101,7 @@ data class CompositeCircle(
         animator?.pause()
     }
 
-    fun isInBoundary(touchX: Float, touchY: Float): Boolean {
-        return ((touchX - xCenter) * (touchX - xCenter)) + ((touchY - yCenter) * (touchY - yCenter)) <= radius * radius
-    }
+    fun isInBoundary(touchX: Float, touchY: Float): Boolean =
+        Utils.isInBoundaryCircle(touchX, xCenter, touchY, yCenter, radius)
 
 }
