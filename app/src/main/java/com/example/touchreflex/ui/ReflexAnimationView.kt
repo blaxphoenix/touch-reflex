@@ -100,23 +100,23 @@ class ReflexAnimationView(context: Context) : View(context) {
     )
     private val restartNewHighScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
-        context.getString(R.string.game_over),
+        context.getString(R.string.restart_game_new_high_score),
+        true,
         textSize = 100f,
-        color = ResourcesCompat.getColor(this.resources, R.color.red, null)
+        color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
     )
     private val restartMotivationInfoText: SimpleInfoText = SimpleInfoText(
         this,
-        context.getString(R.string.restart_game_new_high_score),
+        context.getString(R.string.restart_game_motivation),
         true,
         textSize = 100f,
         color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
     )
     private val restartGameOverInfoText: SimpleInfoText = SimpleInfoText(
         this,
-        context.getString(R.string.restart_game_motivation),
-        true,
+        context.getString(R.string.game_over),
         textSize = 100f,
-        color = ResourcesCompat.getColor(this.resources, R.color.yellow_heavy_2, null)
+        color = ResourcesCompat.getColor(this.resources, R.color.red, null)
     )
     private val restartTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
         arrayListOf(
@@ -202,7 +202,6 @@ class ReflexAnimationView(context: Context) : View(context) {
         audioService
             .playConfirmSound()
             .switchMusic(MusicType.DEFAULT_GAME)
-            .start()
         state = GAME
         totalScore = 0
         inGameCurrentScoreText.text = totalScore.toString()
@@ -224,9 +223,7 @@ class ReflexAnimationView(context: Context) : View(context) {
 
         state = RESTART_DELAY
         restartTextManager.init()
-        audioService
-            .switchMusic(MusicType.MENU)
-            .start()
+        audioService.switchMusic(MusicType.MENU)
 
         if (totalScore > highScore) {
             audioService.playHighScoreSound()
@@ -276,9 +273,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             circleManager.onStop()
         }
         state = START
-        audioService
-            .switchMusic(MusicType.MENU)
-            .start()
+        audioService.switchMusic(MusicType.MENU)
     }
 
     private class CustomGestureListener(val viewCallback: ReflexAnimationView) :

@@ -38,17 +38,25 @@ class InfiniteCompositeCircleDrawableManager(
 
     private fun buildCompositeCircle(): CompositeCircle {
         updateHue()
+
+        var x: Float
+        var y: Float
+        do {
+            x = Utils.nextFloat(
+                radius * marginModifier,
+                parentView.width.toFloat() - (radius * marginModifier)
+            )
+            y = Utils.nextFloat(
+                radius * marginModifier,
+                parentView.height.toFloat() - (radius * marginModifier)
+            )
+        } while (checkIfOverlapping(x, y))
+
         return CompositeCircle(
             this,
             parentView,
-            Utils.nextFloat(
-                radius * marginModifier,
-                parentView.width.toFloat() - (radius * marginModifier)
-            ),
-            Utils.nextFloat(
-                radius * marginModifier,
-                parentView.height.toFloat() - (radius * marginModifier)
-            ),
+            x,
+            y,
             radius,
             circleDuration,
             hue
@@ -61,6 +69,19 @@ class InfiniteCompositeCircleDrawableManager(
         } else {
             0f
         }
+    }
+
+    private fun checkIfOverlapping(x: Float, y: Float): Boolean {
+        val overlapping =
+            circles.find {
+                Utils.distance(
+                    x,
+                    y,
+                    it.xCenter,
+                    it.yCenter
+                ) <= (radius * 2) + (it.animatorValue * 2)
+            } != null
+        return overlapping
     }
 
     private fun postDelayed(

@@ -94,6 +94,9 @@ class AudioService(context: Context) {
             stop()
             currentMusicType = musicType
             currentMediaPlayer = cache[musicType]?.random()
+            if (!isPaused) {
+                start()
+            }
         }
         return this
     }
