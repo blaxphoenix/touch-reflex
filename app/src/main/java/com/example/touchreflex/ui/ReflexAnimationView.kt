@@ -16,6 +16,7 @@ import com.example.touchreflex.db.GameMode
 import com.example.touchreflex.db.HighScoreItem
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
+import com.example.touchreflex.draw.circle.DemoCompositeCircleDrawableManager
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
 import com.example.touchreflex.draw.text.AnimatedInfoText
 import com.example.touchreflex.draw.text.InfoTextDrawableManager
@@ -55,6 +56,9 @@ class ReflexAnimationView(context: Context) : View(context) {
             }
         }
     )
+
+    private val demoCircleManager: DemoCompositeCircleDrawableManager =
+        DemoCompositeCircleDrawableManager(this)
 
     // start game text
     private val startHighScoreInfoText: SimpleInfoText = SimpleInfoText(
@@ -178,6 +182,8 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         startTextManager.init()
+        demoCircleManager.onStop()
+        demoCircleManager.init()
         setUpCoordinates()
     }
 
@@ -206,6 +212,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         totalScore = 0
         inGameCurrentScoreText.text = totalScore.toString()
         restartHighScoreInfoText.isIgnored = true
+        demoCircleManager.onStop()
         circleManager.onStop()
         circleManager.init()
     }
@@ -245,6 +252,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     override fun onDraw(canvas: Canvas) {
         when (state) {
             START -> {
+                demoCircleManager.onDraw(canvas)
                 startTextManager.onDraw(canvas)
             }
             GAME -> {
@@ -273,6 +281,8 @@ class ReflexAnimationView(context: Context) : View(context) {
             circleManager.onStop()
         }
         state = START
+        demoCircleManager.onStop()
+        demoCircleManager.init()
         audioService.switchMusic(MusicType.MENU)
     }
 

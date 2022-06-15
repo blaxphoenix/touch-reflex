@@ -7,14 +7,14 @@ import android.view.View
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
-import java.util.*
+import java.util.concurrent.ConcurrentLinkedDeque
 
-class InfiniteCompositeCircleDrawableManager(
+open class InfiniteCompositeCircleDrawableManager(
     private val parentView: View,
     private val callback: ReflexAnimationCallback? = null
 ) : CustomDrawableManager {
 
-    private val circles: LinkedList<CompositeCircle> = LinkedList()
+    protected val circles: ConcurrentLinkedDeque<CompositeCircle> = ConcurrentLinkedDeque()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val radius: Float = 90f
     private val startCircleDuration: Long = 3500L
@@ -25,6 +25,7 @@ class InfiniteCompositeCircleDrawableManager(
     private var circleInterval: Long = startCircleInterval
     private var hue: Float = 0f
 
+    protected var alpha: Int = 0xFF
     private val marginModifier = 1.10f
 
     override fun init(): CustomDrawableManager {
@@ -62,7 +63,8 @@ class InfiniteCompositeCircleDrawableManager(
             y,
             radius,
             circleDuration,
-            hue
+            hue,
+            alpha
         )
     }
 
@@ -141,8 +143,8 @@ class InfiniteCompositeCircleDrawableManager(
         }
         if (toRemove != null) {
             callback?.onScored()
+            circles.remove(toRemove)
         }
-        circles.remove(toRemove)
     }
 
     override fun onPause() {

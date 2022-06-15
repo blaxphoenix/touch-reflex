@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.annotation.IntRange
 import com.example.touchreflex.draw.CustomDrawable
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.utils.ReverseInterpolator
@@ -20,10 +21,13 @@ data class CompositeCircle(
     val yCenter: Float,
     private var radius: Float,
     private val duration: Long,
-    private val hue: Float
+    private val hue: Float,
+    @IntRange(from = 0, to = 255)
+    private val alpha: Int = 0xFF
 ) : CustomDrawable {
 
     val animatorValue: Float = 100f
+    private val strokeAlpha = alpha / 2
     private val saturation: Float = 0.5f
     private val luminosity: Float = 0.5f
 
@@ -32,6 +36,8 @@ data class CompositeCircle(
     private var animator: ValueAnimator? = null
     private var isInverted = false
     private var isDisabled = true
+    var isDone = false
+        private set
 
     init {
         initPaint()
@@ -48,9 +54,9 @@ data class CompositeCircle(
 
     private fun setColors(modifier: Float = 0f) {
         paintFill.color =
-            Color.HSVToColor(floatArrayOf(hue, saturation + modifier, luminosity + modifier))
+            Color.HSVToColor(alpha, floatArrayOf(hue, saturation + modifier, luminosity + modifier))
         paintStroke.color =
-            Color.HSVToColor(150, floatArrayOf(hue, saturation + modifier, luminosity + modifier))
+            Color.HSVToColor(alpha - strokeAlpha, floatArrayOf(hue, saturation + modifier, luminosity + modifier))
     }
 
     private fun initAnimator() {
@@ -69,6 +75,7 @@ data class CompositeCircle(
                 if (isInverted) {
                     if (!isDisabled) {
                         circleManager.onPause()
+                        isDone = true
                     }
                 } else {
                     animation?.interpolator =
