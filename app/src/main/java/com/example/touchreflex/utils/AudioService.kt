@@ -83,6 +83,7 @@ class AudioService(context: Context) {
         return this
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun stop(): AudioService {
         currentMediaPlayer?.pause()
         currentMediaPlayer?.seekTo(0)

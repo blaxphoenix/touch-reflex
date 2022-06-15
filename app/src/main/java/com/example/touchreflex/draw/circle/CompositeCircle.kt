@@ -31,7 +31,7 @@ data class CompositeCircle(
     private val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
     private var animator: ValueAnimator? = null
     private var isInverted = false
-    private var isDisabled = false
+    private var isDisabled = true
 
     init {
         initPaint()
@@ -82,12 +82,15 @@ data class CompositeCircle(
     }
 
     override fun onStartDrawing() {
+        isDisabled = false
         animator?.start()
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawCircle(xCenter, yCenter, radius, paintStroke)
-        canvas.drawCircle(xCenter, yCenter, radius - (radius * 0.25f), paintFill)
+        if (!isDisabled) {
+            canvas.drawCircle(xCenter, yCenter, radius, paintStroke)
+            canvas.drawCircle(xCenter, yCenter, radius - (radius * 0.25f), paintFill)
+        }
     }
 
     override fun onDisable() {
@@ -97,11 +100,9 @@ data class CompositeCircle(
         animator?.removeAllUpdateListeners()
     }
 
-    fun pause() {
-        animator?.pause()
-    }
+    fun pause() = animator?.pause()
 
     fun isInBoundary(touchX: Float, touchY: Float): Boolean =
-        Utils.isInBoundaryCircle(touchX, xCenter, touchY, yCenter, radius)
+        !isDisabled && Utils.isInBoundaryCircle(touchX, xCenter, touchY, yCenter, radius)
 
 }

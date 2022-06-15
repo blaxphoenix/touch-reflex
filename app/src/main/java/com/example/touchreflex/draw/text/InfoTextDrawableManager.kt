@@ -18,7 +18,9 @@ class InfoTextDrawableManager(
 
     override fun onTouch(touchX: Float, touchY: Float) {}
 
-    override fun onPause() {}
+    override fun onPause() {
+        // TODO pause animations?
+    }
 
     override fun onStop() {}
 

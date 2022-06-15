@@ -41,6 +41,7 @@ class InfiniteCompositeCircleDrawableManager(
 
         var x: Float
         var y: Float
+        var tries = 0
         do {
             x = Utils.nextFloat(
                 radius * marginModifier,
@@ -50,7 +51,9 @@ class InfiniteCompositeCircleDrawableManager(
                 radius * marginModifier,
                 parentView.height.toFloat() - (radius * marginModifier)
             )
-        } while (checkIfOverlapping(x, y))
+            tries++
+            // limit tries to not enter a possible infinite loop
+        } while (checkIfOverlapping(x, y) && tries < 10)
 
         return CompositeCircle(
             this,
@@ -71,18 +74,15 @@ class InfiniteCompositeCircleDrawableManager(
         }
     }
 
-    private fun checkIfOverlapping(x: Float, y: Float): Boolean {
-        val overlapping =
-            circles.find {
-                Utils.distance(
-                    x,
-                    y,
-                    it.xCenter,
-                    it.yCenter
-                ) <= (radius * 2) + (it.animatorValue * 2)
-            } != null
-        return overlapping
-    }
+    private fun checkIfOverlapping(x: Float, y: Float): Boolean =
+        circles.find {
+            Utils.distance(
+                x,
+                y,
+                it.xCenter,
+                it.yCenter
+            ) <= it.animatorValue * 4
+        } != null
 
     private fun postDelayed(
         circle: CompositeCircle,
@@ -91,8 +91,8 @@ class InfiniteCompositeCircleDrawableManager(
         extraDelay: Long = 0L
     ) {
         val delay = initialDelay ?: Utils.nextLongWithMargin(circleInterval, circleInterval / 3L)
+        circles.add(circle)
         mainHandler.postDelayed({
-            circles.add(circle)
             circle.onStartDrawing()
             postDelayed(buildCompositeCircle())
         }, extraDelay + delay)
@@ -128,9 +128,7 @@ class InfiniteCompositeCircleDrawableManager(
         }
     }
 
-    override fun onDraw(canvas: Canvas) {
-        circles.forEach { it.onDraw(canvas) }
-    }
+    override fun onDraw(canvas: Canvas) = circles.forEach { it.onDraw(canvas) }
 
     override fun onTouch(touchX: Float, touchY: Float) {
         var toRemove: CompositeCircle? = null
