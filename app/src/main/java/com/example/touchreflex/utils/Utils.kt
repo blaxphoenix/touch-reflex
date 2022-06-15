@@ -7,13 +7,11 @@ import kotlin.random.Random
 class Utils {
 
     companion object {
-        fun nextFloat(min: Float, max: Float): Float {
-            return Random.nextFloat() * (max - min) + min
-        }
+        fun nextFloat(min: Float, max: Float): Float =
+            Random.nextFloat() * (max - min) + min
 
-        fun nextLongWithMargin(value: Long, margin: Long = 150L): Long {
-            return Random.nextLong(value - margin, value + margin)
-        }
+        fun nextLongWithMargin(value: Long, margin: Long = 150L): Long =
+            Random.nextLong(value - margin, value + margin)
 
         fun isInBoundaryCircle(x1: Float, x2: Float, y1: Float, y2: Float, r: Float): Boolean =
             (x1 - x2).pow(2) + (y1 - y2).pow(2) <= r.pow(2)
