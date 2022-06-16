@@ -109,7 +109,7 @@ data class CompositeCircle(
 
     fun pause() = animator?.pause()
 
-    fun isInBoundary(touchX: Float, touchY: Float): Boolean =
+    override fun isInBoundary(touchX: Float, touchY: Float): Boolean =
         !isDisabled && Utils.isInBoundaryCircle(touchX, xCenter, touchY, yCenter, radius)
 
 }

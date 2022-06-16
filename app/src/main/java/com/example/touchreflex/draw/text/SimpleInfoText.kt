@@ -38,4 +38,6 @@ class SimpleInfoText(
         y = newY
     }
 
+    override fun isInBoundary(touchX: Float, touchY: Float): Boolean = false
+
 }

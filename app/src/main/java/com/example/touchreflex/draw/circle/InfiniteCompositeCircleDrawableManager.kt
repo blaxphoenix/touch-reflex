@@ -18,7 +18,7 @@ open class InfiniteCompositeCircleDrawableManager(
     protected val circles: ConcurrentLinkedDeque<CompositeCircle> = ConcurrentLinkedDeque()
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    var settings: CircleManagerSettings = CircleManagerSettings.DEFAULT
+    var settings: CircleManagerSettings = CircleManagerSettings.EASY
     private var circleDuration: Long = settings.startCircleDuration
     private var circleInterval: Long = settings.startCircleInterval
 
@@ -31,7 +31,7 @@ open class InfiniteCompositeCircleDrawableManager(
         circleDuration = settings.startCircleDuration
         circleInterval = settings.startCircleInterval
         postDelayed(buildCompositeCircle(), initialDelay = 250)
-        if (settings.gameMode == GameMode.DEFAULT) {
+        if (settings.gameMode == GameMode.EASY) {
             postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval)
         }
         postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval * 2)
@@ -104,7 +104,7 @@ open class InfiniteCompositeCircleDrawableManager(
         }
     }
 
-    private fun updateTimers() {
+    protected open fun updateTimers() {
         if (circleDuration > settings.minCircleDuration) {
             var modifier = settings.circleDurationModifier1
             if (settings.minCircleDuration / circleDuration <= 0.5) {

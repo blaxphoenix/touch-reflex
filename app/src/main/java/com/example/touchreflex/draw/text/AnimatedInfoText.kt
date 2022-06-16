@@ -73,4 +73,7 @@ class AnimatedInfoText(
         animator?.removeAllUpdateListeners()
     }
 
+    // TODO implement properly
+    override fun isInBoundary(touchX: Float, touchY: Float): Boolean = false
+
 }

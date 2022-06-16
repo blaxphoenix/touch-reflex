@@ -1,6 +1,7 @@
 package com.example.touchreflex.draw.circle
 
 import com.example.touchreflex.db.GameMode
+import java.util.*
 
 enum class CircleManagerSettings(
     val gameMode: GameMode,
@@ -13,8 +14,8 @@ enum class CircleManagerSettings(
     val circleIntervalModifier1: Long,
     val circleIntervalModifier2: Long
 ) {
-    DEFAULT(
-        GameMode.DEFAULT,
+    EASY(
+        GameMode.EASY,
         3500L,
         1750L,
         2250L,
@@ -35,4 +36,6 @@ enum class CircleManagerSettings(
         40L,
         80L
     )
+
+    // TODO cross reference map?
 }

@@ -9,6 +9,8 @@ class DemoCompositeCircleDrawableManager(parentView: View) :
         alpha = 0x66
     }
 
+    override fun updateTimers() {}
+
     override fun onPause() =
         circles.forEach { if (it.isDone) circles.remove(it) }
 

@@ -15,6 +15,8 @@ import com.example.touchreflex.R
 import com.example.touchreflex.db.GameMode
 import com.example.touchreflex.db.HighScoreItem
 import com.example.touchreflex.draw.ReflexAnimationCallback
+import com.example.touchreflex.draw.button.SingleSelectorButton
+import com.example.touchreflex.draw.button.SingleSelectorButtonDrawableManager
 import com.example.touchreflex.draw.circle.CircleManagerSettings
 import com.example.touchreflex.draw.circle.DemoCompositeCircleDrawableManager
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
@@ -25,6 +27,7 @@ import com.example.touchreflex.utils.AudioService
 import com.example.touchreflex.utils.GameState
 import com.example.touchreflex.utils.GameState.*
 import com.example.touchreflex.utils.MusicType
+import java.util.*
 
 /**
  * The basic reflex animation game view.
@@ -33,7 +36,29 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     var state: GameState = START
         private set
-    private var gameMode: GameMode = GameMode.DEFAULT
+    private var gameMode: GameMode = GameMode.EASY
+        set(value) {
+            field = value
+            when (value) {
+                // TODO cross reference map solution?
+                GameMode.EASY -> {
+                    circleManager.settings = CircleManagerSettings.EASY
+                    demoCircleManager.settings = CircleManagerSettings.EASY
+                }
+                GameMode.HARD -> {
+                    circleManager.settings = CircleManagerSettings.HARD
+                    demoCircleManager.settings = CircleManagerSettings.HARD
+                }
+            }
+            demoCircleManager.onStop()
+            demoCircleManager.init()
+            startHighScoreInfoText.text =
+                context.getString(
+                    R.string.info_high_score,
+                    context.getString(gameMode.nameResourceId),
+                    highScores[gameMode]
+                )
+        }
     private val mainHandler = Handler(Looper.getMainLooper())
 
     private lateinit var highScoreViewModel: HighScoreViewModel
@@ -43,7 +68,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         GestureDetectorCompat(context, CustomGestureListener(this))
 
     private var totalScore = 0
-    private var highScore = 0
+    private var highScores: EnumMap<GameMode, Int> = EnumMap(GameMode.values().associateWith { 0 })
 
     private val circleManager: InfiniteCompositeCircleDrawableManager =
         InfiniteCompositeCircleDrawableManager(
@@ -65,7 +90,11 @@ class ReflexAnimationView(context: Context) : View(context) {
     // start game text
     private val startHighScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
-        highScore.toString(),
+        context.getString(
+            R.string.info_high_score,
+            context.getString(gameMode.nameResourceId),
+            highScores[gameMode]
+        ),
         color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
     )
     private val startDescriptionInfoText1: SimpleInfoText = SimpleInfoText(
@@ -96,12 +125,20 @@ class ReflexAnimationView(context: Context) : View(context) {
     // restart game text
     private val restartCurrentScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
-        context.getString(R.string.info_current_score, totalScore),
+        context.getString(
+            R.string.info_current_score,
+            context.getString(gameMode.nameResourceId),
+            totalScore
+        ),
         color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
     )
     private val restartHighScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
-        context.getString(R.string.info_high_score, highScore),
+        context.getString(
+            R.string.info_high_score,
+            context.getString(gameMode.nameResourceId),
+            highScores[gameMode]
+        ),
         color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
     )
     private val restartNewHighScoreInfoText: SimpleInfoText = SimpleInfoText(
@@ -151,13 +188,45 @@ class ReflexAnimationView(context: Context) : View(context) {
         )
     )
 
+    // game mode selection buttons
+    private val gameModeButtonEasy = SingleSelectorButton(
+        this,
+        0f,
+        0f,
+        220f,
+        450f,
+        context.getString(R.string.game_mode_easy).uppercase(),
+        ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null),
+        true
+    )
+    private val gameModeButtonHard = SingleSelectorButton(
+        this,
+        0f,
+        0f,
+        220f,
+        450f,
+        context.getString(R.string.game_mode_hard).uppercase(),
+        ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
+    )
+    private val gameModeButtonManager = SingleSelectorButtonDrawableManager(
+        arrayListOf(
+            gameModeButtonEasy,
+            gameModeButtonHard
+        )
+    )
+
     private val highScoreObserver = Observer<MutableList<HighScoreItem>> { list ->
         list?.let {
-            val item = list.firstOrNull { it.gameMode == GameMode.DEFAULT }
+            list.forEach { highScores[it.gameMode] = it.score }
+            val item = list.firstOrNull { it.gameMode == GameMode.EASY }
             if (item != null) {
-                highScore = item.score
+                highScores[item.gameMode] = item.score
                 startHighScoreInfoText.text =
-                    context.getString(R.string.info_high_score, item.score)
+                    context.getString(
+                        R.string.info_high_score,
+                        context.getString(gameMode.nameResourceId),
+                        item.score
+                    )
             }
         }
     }
@@ -204,6 +273,9 @@ class ReflexAnimationView(context: Context) : View(context) {
         yPos += 120f
         restartNewHighScoreInfoText.setNewCoordinates(xPos, yPos)
         restartMotivationInfoText.setNewCoordinates(xPos, yPos)
+
+        gameModeButtonEasy.setNewCoordinates(this.width * 0.3f, this.height / 1.25f)
+        gameModeButtonHard.setNewCoordinates(this.width * 0.7f, this.height / 1.25f)
     }
 
     private fun initGame() {
@@ -234,10 +306,10 @@ class ReflexAnimationView(context: Context) : View(context) {
         restartTextManager.init()
         audioService.switchMusic(MusicType.MENU)
 
-        if (totalScore > highScore) {
+        if (totalScore > highScores[gameMode]!!) {
             audioService.playHighScoreSound()
-            highScore = totalScore
-            highScoreViewModel.insert(HighScoreItem(GameMode.DEFAULT, highScore))
+            highScores[gameMode] = totalScore
+            highScoreViewModel.insert(HighScoreItem(gameMode, totalScore))
             restartNewHighScoreInfoText.isIgnored = false
             restartMotivationInfoText.isIgnored = true
         } else {
@@ -246,9 +318,18 @@ class ReflexAnimationView(context: Context) : View(context) {
             restartMotivationInfoText.isIgnored = false
         }
         restartHighScoreInfoText.isIgnored = false
-        restartHighScoreInfoText.text = context.getString(R.string.info_high_score, highScore)
+        restartHighScoreInfoText.text =
+            context.getString(
+                R.string.info_high_score,
+                context.getString(gameMode.nameResourceId),
+                highScores[gameMode]
+            )
         restartCurrentScoreInfoText.text =
-            context.getString(R.string.info_current_score, totalScore)
+            context.getString(
+                R.string.info_current_score,
+                context.getString(gameMode.nameResourceId),
+                totalScore
+            )
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -256,6 +337,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             START -> {
                 demoCircleManager.onDraw(canvas)
                 startTextManager.onDraw(canvas)
+                gameModeButtonManager.onDraw(canvas)
             }
             GAME -> {
                 circleManager.onDraw(canvas)
@@ -278,7 +360,6 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     fun onBackPressed() {
-        println(state)
         if (state == GAME) {
             circleManager.onStop()
         }
@@ -299,10 +380,33 @@ class ReflexAnimationView(context: Context) : View(context) {
 
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             when (viewCallback.state) {
-                START, RESTART -> {
+                START -> {
+                    val centerY = viewCallback.height / 2
+                    val touchX = e.x
+                    val touchY = e.y
+                    // TODO implement properly with animatedText.isInBoundary()
+                    if (touchY > centerY - 250 && touchY < centerY + 250) {
+                        viewCallback.initGame()
+                    }
+                    if (viewCallback.gameModeButtonEasy.isInBoundary(touchX, touchY)) {
+                        if (!viewCallback.gameModeButtonEasy.isSelected) {
+                            viewCallback.gameModeButtonEasy.onTouch(touchX, touchY)
+                            viewCallback.gameModeButtonHard.onTouch(touchX, touchY)
+                            viewCallback.gameMode = GameMode.EASY
+                        }
+                    } else if (viewCallback.gameModeButtonHard.isInBoundary(touchX, touchY)) {
+                        if (!viewCallback.gameModeButtonHard.isSelected) {
+                            viewCallback.gameModeButtonHard.onTouch(touchX, touchY)
+                            viewCallback.gameModeButtonEasy.onTouch(touchX, touchY)
+                            viewCallback.gameMode = GameMode.HARD
+                        }
+                    }
+                }
+                RESTART -> {
                     val centerY = viewCallback.height / 2
                     val touchY = e.y
-                    if (touchY > centerY - 150 && touchY < centerY + 150) {
+                    // TODO implement properly with animatedText.isInBoundary()
+                    if (touchY > centerY - 250 && touchY < centerY + 250) {
                         viewCallback.initGame()
                     }
                 }
@@ -316,10 +420,10 @@ class ReflexAnimationView(context: Context) : View(context) {
             when (viewCallback.state) {
                 START -> {
                     viewCallback.circleManager.settings =
-                        if (viewCallback.circleManager.settings == CircleManagerSettings.DEFAULT) {
+                        if (viewCallback.circleManager.settings == CircleManagerSettings.EASY) {
                             CircleManagerSettings.HARD
                         } else {
-                            CircleManagerSettings.DEFAULT
+                            CircleManagerSettings.EASY
                         }
                     viewCallback.initGame()
                 }
