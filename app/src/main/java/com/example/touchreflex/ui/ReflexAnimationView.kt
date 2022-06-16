@@ -20,6 +20,7 @@ import com.example.touchreflex.draw.button.SingleSelectorButtonDrawableManager
 import com.example.touchreflex.draw.circle.CircleManagerSettings
 import com.example.touchreflex.draw.circle.DemoCompositeCircleDrawableManager
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
+import com.example.touchreflex.draw.image.SimpleImage
 import com.example.touchreflex.draw.text.AnimatedInfoText
 import com.example.touchreflex.draw.text.InfoTextDrawableManager
 import com.example.touchreflex.draw.text.SimpleInfoText
@@ -67,7 +68,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var gestureDetector: GestureDetectorCompat =
         GestureDetectorCompat(context, CustomGestureListener(this))
 
-    private var totalScore = 0
+    private var currentTotalScore = 0
     private var highScores: EnumMap<GameMode, Int> = EnumMap(GameMode.values().associateWith { 0 })
 
     private val circleManager: InfiniteCompositeCircleDrawableManager =
@@ -128,7 +129,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         context.getString(
             R.string.info_current_score,
             context.getString(gameMode.nameResourceId),
-            totalScore
+            currentTotalScore
         ),
         color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
     )
@@ -179,7 +180,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     // in game text
     private val inGameCurrentScoreText: SimpleInfoText = SimpleInfoText(
         this,
-        totalScore.toString(),
+        currentTotalScore.toString(),
         color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
     )
     private val inGameTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
@@ -215,10 +216,21 @@ class ReflexAnimationView(context: Context) : View(context) {
         )
     )
 
+    // back button
+    private val backButton: SimpleImage? =
+        ResourcesCompat.getDrawable(resources, R.drawable.custom_back_button, null)?.let {
+            SimpleImage(
+                it,
+                context.getColor(R.color.purple),
+                0, 0, 200, 200
+            )
+        }
+
     private val highScoreObserver = Observer<MutableList<HighScoreItem>> { list ->
         list?.let {
             list.forEach { highScores[it.gameMode] = it.score }
             val item = list.firstOrNull { it.gameMode == GameMode.EASY }
+            // TODO use .let{} in all places like this?
             if (item != null) {
                 highScores[item.gameMode] = item.score
                 startHighScoreInfoText.text =
@@ -283,8 +295,8 @@ class ReflexAnimationView(context: Context) : View(context) {
             .playConfirmSound()
             .switchMusic(MusicType.DEFAULT_GAME)
         state = GAME
-        totalScore = 0
-        inGameCurrentScoreText.text = totalScore.toString()
+        currentTotalScore = 0
+        inGameCurrentScoreText.text = currentTotalScore.toString()
         restartHighScoreInfoText.isIgnored = true
         demoCircleManager.onStop()
         circleManager.onStop()
@@ -293,8 +305,8 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     private fun scored() {
         audioService.playTouchSound()
-        totalScore++
-        inGameCurrentScoreText.text = totalScore.toString()
+        currentTotalScore++
+        inGameCurrentScoreText.text = currentTotalScore.toString()
     }
 
     private fun gameOver() {
@@ -306,10 +318,10 @@ class ReflexAnimationView(context: Context) : View(context) {
         restartTextManager.init()
         audioService.switchMusic(MusicType.MENU)
 
-        if (totalScore > highScores[gameMode]!!) {
+        if (currentTotalScore > highScores[gameMode]!!) {
             audioService.playHighScoreSound()
-            highScores[gameMode] = totalScore
-            highScoreViewModel.insert(HighScoreItem(gameMode, totalScore))
+            highScores[gameMode] = currentTotalScore
+            highScoreViewModel.insert(HighScoreItem(gameMode, currentTotalScore))
             restartNewHighScoreInfoText.isIgnored = false
             restartMotivationInfoText.isIgnored = true
         } else {
@@ -328,7 +340,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             context.getString(
                 R.string.info_current_score,
                 context.getString(gameMode.nameResourceId),
-                totalScore
+                currentTotalScore
             )
     }
 
@@ -346,6 +358,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             RESTART, RESTART_DELAY -> {
                 circleManager.onDraw(canvas)
                 restartTextManager.onDraw(canvas)
+                backButton?.onDraw(canvas)
             }
         }
     }
@@ -381,6 +394,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             when (viewCallback.state) {
                 START -> {
+                    // TODO move to common place inside reflex view class maybe?
                     val centerY = viewCallback.height / 2
                     val touchX = e.x
                     val touchY = e.y
@@ -403,11 +417,17 @@ class ReflexAnimationView(context: Context) : View(context) {
                     }
                 }
                 RESTART -> {
+                    // TODO move to common place inside reflex view class maybe?
                     val centerY = viewCallback.height / 2
+                    val touchX = e.x
                     val touchY = e.y
                     // TODO implement properly with animatedText.isInBoundary()
                     if (touchY > centerY - 250 && touchY < centerY + 250) {
                         viewCallback.initGame()
+                    }
+                    // TODO make it also work on START screen to exit app?
+                    if (viewCallback.backButton?.isInBoundary(touchX, touchY) == true) {
+                        viewCallback.state = START
                     }
                 }
                 else -> {
