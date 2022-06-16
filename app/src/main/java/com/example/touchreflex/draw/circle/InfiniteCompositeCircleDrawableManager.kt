@@ -16,24 +16,22 @@ open class InfiniteCompositeCircleDrawableManager(
 
     protected val circles: ConcurrentLinkedDeque<CompositeCircle> = ConcurrentLinkedDeque()
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val radius: Float = 90f
-    private val startCircleDuration: Long = 3500L
-    private val startCircleInterval: Long = 1750L
-    private val minCircleDuration: Long = 2250L
-    private val minCircleInterval: Long = 750L
-    private var circleDuration: Long = startCircleDuration
-    private var circleInterval: Long = startCircleInterval
-    private var hue: Float = 0f
 
+    var settings: CircleManagerSettings = CircleManagerSettings.DEFAULT
+    private var circleDuration: Long = settings.startCircleDuration
+    private var circleInterval: Long = settings.startCircleInterval
+
+    private val radius: Float = 90f
+    private var hue: Float = 0f
     protected var alpha: Int = 0xFF
     private val marginModifier = 1.10f
 
     override fun init(): CustomDrawableManager {
-        circleDuration = startCircleDuration
-        circleInterval = startCircleInterval
+        circleDuration = settings.startCircleDuration
+        circleInterval = settings.startCircleInterval
         postDelayed(buildCompositeCircle(), initialDelay = 250)
-        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval)
-        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval * 2)
+        postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval)
+        postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval * 2)
         return this
     }
 
@@ -104,28 +102,28 @@ open class InfiniteCompositeCircleDrawableManager(
     }
 
     private fun updateTimers() {
-        if (circleDuration > minCircleDuration) {
-            var modifier = 80L
-            if (minCircleDuration / circleDuration <= 0.5) {
-                modifier = 120L
+        if (circleDuration > settings.minCircleDuration) {
+            var modifier = settings.circleDurationModifier1
+            if (settings.minCircleDuration / circleDuration <= 0.5) {
+                modifier = settings.circleDurationModifier2
             }
             val updatedCircleDuration = circleDuration - (circleDuration / modifier)
-            circleDuration = if (updatedCircleDuration >= minCircleDuration) {
+            circleDuration = if (updatedCircleDuration >= settings.minCircleDuration) {
                 updatedCircleDuration
             } else {
-                minCircleDuration
+                settings.minCircleDuration
             }
         }
-        if (circleInterval > minCircleInterval) {
-            var modifier = 60L
-            if (minCircleInterval / circleInterval <= 0.5) {
-                modifier = 120L
+        if (circleInterval > settings.minCircleInterval) {
+            var modifier = settings.circleIntervalModifier1
+            if (settings.minCircleInterval / circleInterval <= 0.5) {
+                modifier = settings.circleIntervalModifier2
             }
             val updatedCircleInterval = circleInterval - (circleInterval / modifier)
-            circleInterval = if (updatedCircleInterval >= minCircleInterval) {
+            circleInterval = if (updatedCircleInterval >= settings.minCircleInterval) {
                 updatedCircleInterval
             } else {
-                minCircleInterval
+                settings.minCircleInterval
             }
         }
     }

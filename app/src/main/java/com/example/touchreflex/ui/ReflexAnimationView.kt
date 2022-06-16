@@ -14,8 +14,8 @@ import androidx.lifecycle.Observer
 import com.example.touchreflex.R
 import com.example.touchreflex.db.GameMode
 import com.example.touchreflex.db.HighScoreItem
-import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
+import com.example.touchreflex.draw.circle.CircleManagerSettings
 import com.example.touchreflex.draw.circle.DemoCompositeCircleDrawableManager
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
 import com.example.touchreflex.draw.text.AnimatedInfoText
@@ -33,6 +33,7 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     var state: GameState = START
         private set
+    private var gameMode: GameMode = GameMode.DEFAULT
     private val mainHandler = Handler(Looper.getMainLooper())
 
     private lateinit var highScoreViewModel: HighScoreViewModel
@@ -44,18 +45,19 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var totalScore = 0
     private var highScore = 0
 
-    private val circleManager: CustomDrawableManager = InfiniteCompositeCircleDrawableManager(
-        this,
-        object : ReflexAnimationCallback {
-            override fun onScored() {
-                scored()
-            }
+    private val circleManager: InfiniteCompositeCircleDrawableManager =
+        InfiniteCompositeCircleDrawableManager(
+            this,
+            object : ReflexAnimationCallback {
+                override fun onScored() {
+                    scored()
+                }
 
-            override fun onGameOver() {
-                gameOver()
+                override fun onGameOver() {
+                    gameOver()
+                }
             }
-        }
-    )
+        )
 
     private val demoCircleManager: DemoCompositeCircleDrawableManager =
         DemoCompositeCircleDrawableManager(this)
@@ -310,6 +312,26 @@ class ReflexAnimationView(context: Context) : View(context) {
                 }
             }
             return true
+        }
+
+        override fun onLongPress(e: MotionEvent?) {
+            when (viewCallback.state) {
+                START -> {
+                    viewCallback.circleManager.settings =
+                        if (viewCallback.circleManager.settings == CircleManagerSettings.DEFAULT) {
+                            CircleManagerSettings.HARD
+                        } else {
+                            CircleManagerSettings.DEFAULT
+                        }
+                    viewCallback.initGame()
+                }
+                RESTART -> {
+                    viewCallback.initGame()
+                }
+                else -> {
+                    // nothing
+                }
+            }
         }
     }
 

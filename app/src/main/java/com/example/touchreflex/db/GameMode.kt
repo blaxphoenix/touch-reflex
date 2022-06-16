@@ -1,5 +1,8 @@
 package com.example.touchreflex.db
 
-enum class GameMode {
-    DEFAULT
+import com.example.touchreflex.draw.circle.CircleManagerSettings
+
+enum class GameMode(val settings: CircleManagerSettings) {
+    DEFAULT(CircleManagerSettings.DEFAULT),
+    HARD(CircleManagerSettings.HARD)
 }
