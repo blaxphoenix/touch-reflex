@@ -3,6 +3,7 @@ package com.example.touchreflex.ui
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         audioService = AudioService(this)
         reflexAnimationView = ReflexAnimationView(this).setUpView(highScoreViewModel, audioService)
         setContentView(reflexAnimationView)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onStart() {
