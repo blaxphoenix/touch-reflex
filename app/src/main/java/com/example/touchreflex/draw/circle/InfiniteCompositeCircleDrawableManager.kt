@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import com.example.touchreflex.db.GameMode
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
@@ -30,7 +31,9 @@ open class InfiniteCompositeCircleDrawableManager(
         circleDuration = settings.startCircleDuration
         circleInterval = settings.startCircleInterval
         postDelayed(buildCompositeCircle(), initialDelay = 250)
-        postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval)
+        if (settings.gameMode == GameMode.DEFAULT) {
+            postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval)
+        }
         postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval * 2)
         return this
     }

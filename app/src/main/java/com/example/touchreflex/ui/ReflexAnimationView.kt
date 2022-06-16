@@ -291,7 +291,6 @@ class ReflexAnimationView(context: Context) : View(context) {
     private class CustomGestureListener(val viewCallback: ReflexAnimationView) :
         GestureDetector.SimpleOnGestureListener() {
         override fun onDown(e: MotionEvent): Boolean {
-            // only in the active game state, so the clicking/touching is reactive
             if (viewCallback.state == GAME) {
                 viewCallback.circleManager.onTouch(e.x, e.y)
             }
@@ -299,16 +298,15 @@ class ReflexAnimationView(context: Context) : View(context) {
         }
 
         override fun onSingleTapUp(e: MotionEvent): Boolean {
-            // don't catch accidental navigation swipes if user wants to exit the app or go back
             when (viewCallback.state) {
-                START -> {
-                    viewCallback.initGame()
-                }
-                RESTART -> {
-                    viewCallback.initGame()
+                START, RESTART -> {
+                    val centerY = viewCallback.height / 2
+                    val touchY = e.y
+                    if (touchY > centerY - 150 && touchY < centerY + 150) {
+                        viewCallback.initGame()
+                    }
                 }
                 else -> {
-                    // nothing
                 }
             }
             return true
