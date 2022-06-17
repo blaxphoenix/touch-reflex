@@ -249,14 +249,13 @@ class ReflexAnimationView(context: Context) : View(context) {
         list?.let {
             list.forEach { highScores[it.gameMode] = it.score }
             val item = list.firstOrNull { it.gameMode == gameMode }
-            // TODO use .let{} in all places like this?
-            if (item != null) {
-                highScores[item.gameMode] = item.score
+            item?.let {
+                highScores[it.gameMode] = it.score
                 startHighScoreInfoText.text =
                     context.getString(
                         R.string.info_high_score,
                         context.getString(gameMode.nameResourceId),
-                        item.score
+                        it.score
                     )
             }
         }

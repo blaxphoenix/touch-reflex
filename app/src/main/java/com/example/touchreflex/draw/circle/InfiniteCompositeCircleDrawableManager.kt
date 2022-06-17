@@ -142,9 +142,9 @@ open class InfiniteCompositeCircleDrawableManager(
                 break
             }
         }
-        if (toRemove != null) {
+        toRemove?.let {
             callback?.onScored()
-            circles.remove(toRemove)
+            circles.remove(it)
         }
     }
 
