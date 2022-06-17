@@ -18,7 +18,7 @@ import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.draw.button.SingleSelectorButton
 import com.example.touchreflex.draw.button.SingleSelectorButtonDrawableManager
 import com.example.touchreflex.draw.circle.CircleManagerSettings
-import com.example.touchreflex.draw.circle.DemoCompositeCircleDrawableManager
+import com.example.touchreflex.draw.circle.DemoInfiniteCompositeCircleDrawableManager
 import com.example.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
 import com.example.touchreflex.draw.image.SimpleImage
 import com.example.touchreflex.draw.text.AnimatedInfoText
@@ -100,8 +100,8 @@ class ReflexAnimationView(context: Context) : View(context) {
             }
         )
 
-    private val demoCircleManager: DemoCompositeCircleDrawableManager =
-        DemoCompositeCircleDrawableManager(this)
+    private val demoCircleManager: DemoInfiniteCompositeCircleDrawableManager =
+        DemoInfiniteCompositeCircleDrawableManager(this)
 
     // start game text
     private val startAnimatedText: AnimatedInfoText = AnimatedInfoText(

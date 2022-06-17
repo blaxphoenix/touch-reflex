@@ -2,7 +2,7 @@ package com.example.touchreflex.draw.circle
 
 import android.view.View
 
-class DemoCompositeCircleDrawableManager(parentView: View) :
+class DemoInfiniteCompositeCircleDrawableManager(parentView: View) :
     InfiniteCompositeCircleDrawableManager(parentView) {
 
     init {
