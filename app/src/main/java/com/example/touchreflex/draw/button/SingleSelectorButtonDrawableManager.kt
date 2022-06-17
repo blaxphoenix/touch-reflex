@@ -13,7 +13,9 @@ class SingleSelectorButtonDrawableManager(
 
     override fun onDraw(canvas: Canvas) = elements.forEach { it.onDraw(canvas) }
 
-    override fun onTouch(touchX: Float, touchY: Float) {}
+    override fun onTouch(touchX: Float, touchY: Float) {
+        // TODO do the button switching logic here?
+    }
 
     override fun onPause() {}
 
