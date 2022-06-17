@@ -3,8 +3,7 @@ package com.example.touchreflex.draw.button
 import android.graphics.Canvas
 import android.graphics.RectF
 import android.view.View
-import androidx.core.content.res.ResourcesCompat
-import com.example.touchreflex.R
+import androidx.annotation.ColorInt
 import com.example.touchreflex.draw.CustomDrawable
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.text.SimpleInfoText
@@ -16,9 +15,24 @@ class SingleSelectorButton(
     private val height: Float,
     private val width: Float,
     text: String,
-    color: Int,
+    @ColorInt color: Int,
+    @ColorInt textColor: Int,
     isSelected: Boolean = false
 ) : CustomDrawable, CustomDrawableManager {
+
+    @ColorInt
+    var color: Int = color
+        set(value) {
+            field = value
+            backgroundRectangle.color = value
+        }
+
+    @ColorInt
+    var textColor: Int = textColor
+        set(value) {
+            field = value
+            infoText.color = value
+        }
 
     var isSelected: Boolean = isSelected
         set(value) {
@@ -40,7 +54,7 @@ class SingleSelectorButton(
             text,
             x = rect.centerX(),
             y = rect.centerY() + 40,
-            color = ResourcesCompat.getColor(parentView.resources, R.color.blue_light_2, null)
+            color = textColor
         )
 
     init {

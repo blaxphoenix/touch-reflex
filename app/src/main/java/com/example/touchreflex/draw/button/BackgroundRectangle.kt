@@ -4,15 +4,25 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.view.View
+import androidx.annotation.ColorInt
 import com.example.touchreflex.R
 import com.example.touchreflex.draw.CustomDrawable
 
 class BackgroundRectangle(
     parentView: View,
     var rect: RectF,
-    private val color: Int,
+    @ColorInt color: Int,
     alpha: Int = 50
 ) : CustomDrawable {
+
+    @ColorInt
+    var color: Int = color
+        set(value) {
+            field = value
+            paintFill.color = value
+            paintFill.alpha = alpha
+            paintStroke.color = value
+        }
 
     private val paintFill: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val paintStroke: Paint = Paint(Paint.ANTI_ALIAS_FLAG)

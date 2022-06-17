@@ -40,17 +40,32 @@ class ReflexAnimationView(context: Context) : View(context) {
     private var gameMode: GameMode = GameMode.EASY
         set(value) {
             field = value
-            when (value) {
-                // TODO cross reference map solution?
-                GameMode.EASY -> {
-                    circleManager.settings = CircleManagerSettings.EASY
-                    demoCircleManager.settings = CircleManagerSettings.EASY
-                }
-                GameMode.HARD -> {
-                    circleManager.settings = CircleManagerSettings.HARD
-                    demoCircleManager.settings = CircleManagerSettings.HARD
-                }
-            }
+            circleManager.settings = value.settings
+            demoCircleManager.settings = value.settings
+
+            startHighScoreInfoText.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+            startAnimatedText.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+            gameModeButtonEasy.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+            gameModeButtonEasy.textColor =
+                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+            gameModeButtonHard.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+            gameModeButtonHard.textColor =
+                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+            inGameCurrentScoreText.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+            restartCurrentScoreInfoText.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+            restartHighScoreInfoText.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+            restartAnimatedText.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+            backButton?.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorPrimary, null)
+
             demoCircleManager.onStop()
             demoCircleManager.init()
             startHighScoreInfoText.text =
@@ -89,6 +104,11 @@ class ReflexAnimationView(context: Context) : View(context) {
         DemoCompositeCircleDrawableManager(this)
 
     // start game text
+    private val startAnimatedText: AnimatedInfoText = AnimatedInfoText(
+        this,
+        resources.getString(R.string.start_game),
+        color = ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+    )
     private val startHighScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
         context.getString(
@@ -96,7 +116,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             context.getString(gameMode.nameResourceId),
             highScores[gameMode]
         ),
-        color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
+        color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
     )
     private val startDescriptionInfoText1: SimpleInfoText = SimpleInfoText(
         this,
@@ -112,11 +132,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     )
     private val startTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
         arrayListOf(
-            AnimatedInfoText(
-                this,
-                resources.getString(R.string.start_game),
-                color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
-            ),
+            startAnimatedText,
             startHighScoreInfoText,
             startDescriptionInfoText1,
             startDescriptionInfoText2
@@ -124,6 +140,11 @@ class ReflexAnimationView(context: Context) : View(context) {
     )
 
     // restart game text
+    private val restartAnimatedText: AnimatedInfoText = AnimatedInfoText(
+        this,
+        resources.getString(R.string.restart_game),
+        color = ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+    )
     private val restartCurrentScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
         context.getString(
@@ -131,7 +152,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             context.getString(gameMode.nameResourceId),
             currentTotalScore
         ),
-        color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
+        color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
     )
     private val restartHighScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
@@ -140,7 +161,7 @@ class ReflexAnimationView(context: Context) : View(context) {
             context.getString(gameMode.nameResourceId),
             highScores[gameMode]
         ),
-        color = ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
+        color = ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
     )
     private val restartNewHighScoreInfoText: SimpleInfoText = SimpleInfoText(
         this,
@@ -164,11 +185,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     )
     private val restartTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
         arrayListOf(
-            AnimatedInfoText(
-                this,
-                resources.getString(R.string.restart_game),
-                color = ResourcesCompat.getColor(this.resources, R.color.red_heavy_1, null)
-            ),
+            restartAnimatedText,
             restartCurrentScoreInfoText,
             restartHighScoreInfoText,
             restartNewHighScoreInfoText,
@@ -181,7 +198,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     private val inGameCurrentScoreText: SimpleInfoText = SimpleInfoText(
         this,
         currentTotalScore.toString(),
-        color = ResourcesCompat.getColor(this.resources, R.color.blue_light_2, null)
+        color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
     )
     private val inGameTextManager: InfoTextDrawableManager = InfoTextDrawableManager(
         arrayListOf(
@@ -197,7 +214,8 @@ class ReflexAnimationView(context: Context) : View(context) {
         220f,
         450f,
         context.getString(R.string.game_mode_easy).uppercase(),
-        ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null),
+        ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null),
+        ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null),
         true
     )
     private val gameModeButtonHard = SingleSelectorButton(
@@ -207,7 +225,8 @@ class ReflexAnimationView(context: Context) : View(context) {
         220f,
         450f,
         context.getString(R.string.game_mode_hard).uppercase(),
-        ResourcesCompat.getColor(this.resources, R.color.blue_heavy_1, null)
+        ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null),
+        ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
     )
     private val gameModeButtonManager = SingleSelectorButtonDrawableManager(
         arrayListOf(
@@ -221,7 +240,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         ResourcesCompat.getDrawable(resources, R.drawable.custom_back_button, null)?.let {
             SimpleImage(
                 it,
-                context.getColor(R.color.purple),
+                ResourcesCompat.getColor(this.resources, gameMode.colorPrimary, null),
                 0, 0, 200, 200
             )
         }
