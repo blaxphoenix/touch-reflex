@@ -1,41 +1,58 @@
 package com.example.touchreflex.draw.circle
 
 import com.example.touchreflex.db.GameMode
-import java.util.*
+import com.example.touchreflex.utils.Utils
+import com.google.common.collect.RangeMap
 
 enum class CircleManagerSettings(
     val gameMode: GameMode,
     val startCircleDuration: Long,
-    val startCircleInterval: Long,
     val minCircleDuration: Long,
+    val startCircleInterval: Long,
     val minCircleInterval: Long,
-    val circleDurationModifier1: Long,
-    val circleDurationModifier2: Long,
-    val circleIntervalModifier1: Long,
-    val circleIntervalModifier2: Long
+    val circleDurationDecelerationMap: RangeMap<Int, Long>,
+    val circleIntervalDecelerationMap: RangeMap<Int, Long>
 ) {
     EASY(
         GameMode.EASY,
         3500L,
+        2000L,
         1750L,
-        2250L,
-        750L,
-        80L,
-        120L,
-        60L,
-        120L
+        500L,
+        Utils.buildRangeMap(
+            listOf(
+                Pair(70, 80),
+                Pair(85, 100),
+                Pair(100, 200)
+            )
+        ),
+        Utils.buildRangeMap(
+            listOf(
+                Pair(50, 60),
+                Pair(75, 80),
+                Pair(100, 120)
+            )
+        )
     ),
     HARD(
         GameMode.HARD,
-        2000L,
-        1000L,
+        2500L,
         1500L,
+        1000L,
         500L,
-        50L,
-        80L,
-        40L,
-        80L
+        Utils.buildRangeMap(
+            listOf(
+                Pair(70, 80),
+                Pair(85, 100),
+                Pair(100, 200)
+            )
+        ),
+        Utils.buildRangeMap(
+            listOf(
+                Pair(50, 60),
+                Pair(75, 80),
+                Pair(100, 200)
+            )
+        )
     )
-
-    // TODO cross reference map?
 }

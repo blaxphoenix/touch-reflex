@@ -1,5 +1,8 @@
 package com.example.touchreflex.utils
 
+import com.google.common.collect.Range
+import com.google.common.collect.RangeMap
+import com.google.common.collect.TreeRangeMap
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -19,6 +22,21 @@ class Utils {
         fun distance(x1: Float, y1: Float, x2: Float, y2: Float): Float =
             sqrt((x2 - x1).pow(2) + (y2 - y1).pow(2))
 
+        /**
+         * pair = <rangeEnd, decelerationValue>
+         *     firstPrevious = 0
+         *     closedOpen(previous, rangeEnd)
+         */
+        fun buildRangeMap(configList: List<Pair<Int, Long>>): RangeMap<Int, Long> {
+            val map: RangeMap<Int, Long> = TreeRangeMap.create()
+            var rangeStart = 0
+            configList.forEach {
+                val (rangeEnd, value) = it
+                map.put(Range.closedOpen(rangeStart, rangeEnd), value)
+                rangeStart = rangeEnd
+            }
+            return map
+        }
     }
 
 }

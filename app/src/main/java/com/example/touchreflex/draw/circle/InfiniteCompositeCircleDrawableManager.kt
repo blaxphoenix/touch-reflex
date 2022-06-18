@@ -106,28 +106,31 @@ open class InfiniteCompositeCircleDrawableManager(
 
     protected open fun updateTimers() {
         if (circleDuration > settings.minCircleDuration) {
-            var modifier = settings.circleDurationModifier1
-            if (settings.minCircleDuration / circleDuration <= 0.5) {
-                modifier = settings.circleDurationModifier2
-            }
-            val updatedCircleDuration = circleDuration - (circleDuration / modifier)
+            val percentage: Float = settings.minCircleDuration / circleDuration.toFloat() * 100
+            println("durationPercentage: $percentage% = (${settings.minCircleDuration} / ${circleDuration.toFloat()} * 100)")
+            val modifier: Long? =
+                settings.circleDurationDecelerationMap[percentage.toInt()]
+            println("durationModifier: $modifier")
+            val updatedCircleDuration = circleDuration - (circleDuration / modifier!!)
             circleDuration = if (updatedCircleDuration >= settings.minCircleDuration) {
                 updatedCircleDuration
             } else {
                 settings.minCircleDuration
             }
+            println("updatedCircleDuration: $updatedCircleDuration")
         }
         if (circleInterval > settings.minCircleInterval) {
-            var modifier = settings.circleIntervalModifier1
-            if (settings.minCircleInterval / circleInterval <= 0.5) {
-                modifier = settings.circleIntervalModifier2
-            }
-            val updatedCircleInterval = circleInterval - (circleInterval / modifier)
+            val percentage: Float = settings.minCircleInterval / circleInterval.toFloat() * 100
+            println("intervalPercentage: $percentage% = (${settings.minCircleInterval} / ${circleInterval.toFloat()} * 100)")
+            val modifier: Long? = settings.circleIntervalDecelerationMap[percentage.toInt()]
+            println("intervalModifier: $modifier")
+            val updatedCircleInterval = circleInterval - (circleInterval / modifier!!)
             circleInterval = if (updatedCircleInterval >= settings.minCircleInterval) {
                 updatedCircleInterval
             } else {
                 settings.minCircleInterval
             }
+            println("updatedCircleInterval: $updatedCircleInterval")
         }
     }
 
