@@ -15,12 +15,15 @@ import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
 import ro.blaxphoenix.touchreflex.utils.ReverseInterpolator
 import ro.blaxphoenix.touchreflex.utils.Utils
 
-data class CompositeCircle(
+class CompositeCircle(
     private val circleManager: CustomDrawableManager,
     private val parentView: View,
     val xCenter: Float,
     val yCenter: Float,
-    private var radius: Float,
+    @FloatRange(from = 0.0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
+    private var radius: Float = Utils.MAX_CIRCLE_RADIUS,
+    @FloatRange(from = 0.0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
+    animatorValue: Float,
     private val duration: Long,
     @FloatRange(from = 0.0, to = 360.0)
     private val hue: Float,
@@ -28,8 +31,13 @@ data class CompositeCircle(
     private val alpha: Int = 0xFF
 ) : CustomDrawable {
 
-    // TODO rename to radius and use only for radius and as setting?
-    val animatorValue: Float = 100f
+    // TODO find a better solution
+    var animatorValue: Float = animatorValue
+        set(value) {
+            field = value
+            println("animatorValue: $animatorValue")
+            animator?.setFloatValues(0f, value)
+        }
     private val strokeAlpha = alpha / 2
     private val baseSaturation: Float = 0.5f
     private val baseLuminosity: Float = 0.5f

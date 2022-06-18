@@ -1,9 +1,9 @@
-package ro.blaxphoenix.touchreflex.draw.text
+package ro.blaxphoenix.touchreflex.draw
 
 import android.graphics.Canvas
-import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
+import ro.blaxphoenix.touchreflex.draw.text.InfoText
 
-class InfoTextDrawableManager(
+class DefaultDrawableManager(
     private val elements: ArrayList<InfoText>
 ) : CustomDrawableManager {
     override fun init(): CustomDrawableManager {

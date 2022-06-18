@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package ro.blaxphoenix.touchreflex.ui
 
 import androidx.lifecycle.*

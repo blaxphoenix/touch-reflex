@@ -4,6 +4,7 @@ import com.google.common.collect.RangeMap
 import ro.blaxphoenix.touchreflex.db.GameMode
 import ro.blaxphoenix.touchreflex.utils.Utils
 
+@Suppress("UnstableApiUsage")
 enum class CircleManagerSettings(
     val gameMode: GameMode,
     val startCircleDuration: Long,

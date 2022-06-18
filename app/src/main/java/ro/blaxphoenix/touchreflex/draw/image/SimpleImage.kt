@@ -40,7 +40,8 @@ class SimpleImage(
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean =
         touchX >= x && touchX <= width && touchY >= y && touchY <= height
 
-    fun setNewSize(x: Int, y: Int, width: Int, height: Int) {
+    @Suppress("unused")
+    fun setNewSize(x: Int = this.x, y: Int = this.y, width: Int, height: Int) {
         this.x = x
         this.y = y
         this.width = width

@@ -7,15 +7,19 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import androidx.core.content.res.ResourcesCompat
 import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.utils.ReverseInterpolator
+import ro.blaxphoenix.touchreflex.utils.Utils
 
 class AnimatedInfoText(
     private val parentView: View,
     private val text: String,
+    @FloatRange(from = 0.0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
+    textSize: Float = Utils.MAX_DEFAULT_TEXT_SIZE,
     @ColorInt color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
-) : InfoText(parentView, color = color) {
+) : InfoText(parentView, textSize, color) {
 
     private var animator: ValueAnimator? = null
     private var invert = false
@@ -28,7 +32,7 @@ class AnimatedInfoText(
     }
 
     private fun initAnimator() {
-        animator = ValueAnimator.ofFloat(0f, 40f)
+        animator = ValueAnimator.ofFloat(0f, textSize * 0.4f)
         animator?.duration = 1300L
         animator?.interpolator = AccelerateDecelerateInterpolator()
         animator?.addUpdateListener {
@@ -76,5 +80,9 @@ class AnimatedInfoText(
 
     // TODO implement properly
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean = false
+
+    override fun onTextSizeChanged(textSize: Float) {
+        animator?.setFloatValues(0f, textSize * 0.4f)
+    }
 
 }

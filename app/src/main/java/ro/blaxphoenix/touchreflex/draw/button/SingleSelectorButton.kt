@@ -4,16 +4,18 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
 import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
 import ro.blaxphoenix.touchreflex.draw.text.SimpleInfoText
+import ro.blaxphoenix.touchreflex.utils.Utils
 
 class SingleSelectorButton(
     parentView: View,
     private var centerX: Float,
     private var centerY: Float,
-    private val height: Float,
-    private val width: Float,
+    @FloatRange(from = 0.0, to = Utils.MAX_BUTTON_HEIGHT.toDouble()) private var height: Float,
+    @FloatRange(from = 0.0, to = Utils.MAX_BUTTON_WIDTH.toDouble()) private var width: Float,
     text: String,
     @ColorInt color: Int,
     @ColorInt textColor: Int,
@@ -44,8 +46,8 @@ class SingleSelectorButton(
             }
         }
 
-    private var rect =
-        RectF(centerX - width / 2, centerY - height / 2, centerX + width / 2, centerY + height / 2)
+    private var rect = buildRectangle()
+
     private val backgroundRectangle: BackgroundRectangle =
         BackgroundRectangle(parentView, rect, color)
     private val infoText: SimpleInfoText =
@@ -60,6 +62,9 @@ class SingleSelectorButton(
     init {
         this.isSelected = isSelected
     }
+
+    private fun buildRectangle(): RectF =
+        RectF(centerX - width / 2, centerY - height / 2, centerX + width / 2, centerY + height / 2)
 
     override fun onStartDrawing() {}
 
@@ -83,9 +88,18 @@ class SingleSelectorButton(
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean =
         rect.contains(touchX, touchY)
 
-    fun setNewCoordinates(newCenterX: Float, newCenterY: Float) {
+    fun setNewAttributes(
+        newCenterX: Float,
+        newCenterY: Float,
+        newHeight: Float,
+        newWidth: Float,
+        newTextSize: Float
+    ) {
         centerX = newCenterX
         centerY = newCenterY
+        height = newHeight
+        width = newWidth
+        rect = buildRectangle()
         rect = RectF(
             centerX - width / 2,
             centerY - height / 2,
@@ -93,7 +107,8 @@ class SingleSelectorButton(
             centerY + height / 2
         )
         backgroundRectangle.rect = rect
-        infoText.setNewCoordinates(centerX, centerY + 40)
+        infoText.textSize = newTextSize
+        infoText.setNewCoordinates(centerX, centerY + newTextSize * 0.4f)
     }
 
 }

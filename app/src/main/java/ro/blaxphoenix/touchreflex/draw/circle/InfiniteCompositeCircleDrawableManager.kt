@@ -4,6 +4,8 @@ import android.graphics.Canvas
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import androidx.annotation.FloatRange
+import androidx.annotation.IntRange
 import ro.blaxphoenix.touchreflex.db.GameMode
 import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
 import ro.blaxphoenix.touchreflex.draw.ReflexAnimationCallback
@@ -22,8 +24,13 @@ open class InfiniteCompositeCircleDrawableManager(
     private var circleDuration: Long = settings.startCircleDuration
     private var circleInterval: Long = settings.startCircleInterval
 
-    private val radius: Float = 90f
+    @FloatRange(from = 0.0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
+    var radius: Float = Utils.MAX_CIRCLE_RADIUS
+
+    @FloatRange(from = 0.0, to = 360.0)
     private var hue: Float = 0f
+
+    @IntRange(from = 0, to = 255)
     protected var alpha: Int = 0xFF
     private val marginModifier = 1.10f
 
@@ -64,6 +71,7 @@ open class InfiniteCompositeCircleDrawableManager(
             x,
             y,
             radius,
+            animatorValue = radius,
             circleDuration,
             hue,
             alpha
@@ -85,6 +93,7 @@ open class InfiniteCompositeCircleDrawableManager(
                 y,
                 it.xCenter,
                 it.yCenter
+                // TODO is this good enough?
             ) <= it.animatorValue * 4
         } != null
 

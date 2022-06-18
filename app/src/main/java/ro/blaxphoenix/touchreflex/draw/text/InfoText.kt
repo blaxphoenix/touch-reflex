@@ -4,15 +4,24 @@ import android.graphics.Paint
 import android.text.TextPaint
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.annotation.FloatRange
 import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
 import ro.blaxphoenix.touchreflex.utils.FontCache
+import ro.blaxphoenix.touchreflex.utils.Utils
 
 abstract class InfoText(
     private val parentView: View,
-    protected var textSize: Float = 100f,
+    @FloatRange(from = 0.0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble()) textSize: Float,
     @ColorInt color: Int
 ) : CustomDrawable {
+
+    var textSize: Float = textSize
+        set(value) {
+            field = value
+            paint.textSize = textSize
+            onTextSizeChanged(textSize)
+        }
 
     @ColorInt
     var color: Int = color
@@ -36,5 +45,7 @@ abstract class InfoText(
         paint.typeface = FontCache.get(R.font.kdamthmorproregular, parentView.context)
         paint.setShadowLayer(5.5f, 6.0f, 6.0f, parentView.resources.getColor(R.color.grey, null))
     }
+
+    open fun onTextSizeChanged(textSize: Float) {}
 
 }

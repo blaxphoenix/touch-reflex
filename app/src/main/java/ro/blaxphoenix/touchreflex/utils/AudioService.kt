@@ -13,8 +13,7 @@ class AudioService(val context: Context) {
     private val cache: Hashtable<MusicType, ArrayList<Int>> = Hashtable()
     private var isPaused: Boolean = false
     private var currentMediaPlayer: MediaPlayer? = null
-    var currentMusicType: MusicType? = null
-        private set
+    private var currentMusicType: MusicType? = null
 
     private val soundPool: SoundPool = SoundPool.Builder()
         .setMaxStreams(3)

@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.annotation.IntRange
 import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
 
@@ -12,7 +13,7 @@ class BackgroundRectangle(
     parentView: View,
     var rect: RectF,
     @ColorInt color: Int,
-    alpha: Int = 50
+    @IntRange(from = 0, to = 255) alpha: Int = 50
 ) : CustomDrawable {
 
     @ColorInt

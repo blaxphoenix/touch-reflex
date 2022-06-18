@@ -8,8 +8,25 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 class Utils {
-
     companion object {
+        @Suppress("MemberVisibilityCanBePrivate")
+        const val DEFAULT_SCREEN_WIDTH: Int = 1080
+        const val MAX_CIRCLE_RADIUS: Float = 100f
+        const val MAX_SMALL_TEXT_SIZE: Float = 60f
+        const val MAX_DEFAULT_TEXT_SIZE: Float = 100f
+        const val MAX_BUTTON_TEXT_SIZE: Float = MAX_DEFAULT_TEXT_SIZE
+        const val MAX_BUTTON_WIDTH: Float = 450f
+        const val MAX_BUTTON_HEIGHT: Float = MAX_BUTTON_WIDTH / 2
+        const val MAX_IMAGE_SIZE: Float = 100f
+
+        // TODO better solution, reCalculate() and then cache values (enum map?)
+        fun getSize(maxSize: Float, width: Int): Float =
+            if (width >= DEFAULT_SCREEN_WIDTH) {
+                maxSize
+            } else {
+                width.toFloat() / DEFAULT_SCREEN_WIDTH * maxSize * 0.88f
+            }
+
         fun nextFloat(min: Float, max: Float): Float =
             Random.nextFloat() * (max - min) + min
 
@@ -27,6 +44,7 @@ class Utils {
          *     firstPrevious = 0
          *     closedOpen(previous, rangeEnd)
          */
+        @Suppress("UnstableApiUsage")
         fun buildRangeMap(configList: List<Pair<Int, Long>>): RangeMap<Int, Long> {
             val map: RangeMap<Int, Long> = TreeRangeMap.create()
             var rangeStart = 0
@@ -38,5 +56,4 @@ class Utils {
             return map
         }
     }
-
 }
