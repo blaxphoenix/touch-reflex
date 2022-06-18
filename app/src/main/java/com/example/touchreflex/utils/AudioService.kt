@@ -4,12 +4,13 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.SoundPool
+import androidx.annotation.IntegerRes
 import com.example.touchreflex.R
 import java.util.*
 
-class AudioService(context: Context) {
+class AudioService(val context: Context) {
 
-    private val cache: Hashtable<MusicType, ArrayList<MediaPlayer>> = Hashtable()
+    private val cache: Hashtable<MusicType, ArrayList<Int>> = Hashtable()
     private var isPaused: Boolean = false
     private var currentMediaPlayer: MediaPlayer? = null
     var currentMusicType: MusicType? = null
@@ -31,15 +32,24 @@ class AudioService(context: Context) {
     private val highScoreSoundId: Int = soundPool.load(context, R.raw.sound_high_score, 1)
 
     init {
-        cache[MusicType.MENU] = arrayListOf(setUpMediaPlayer(context, R.raw.music_menu_1))
-        cache[MusicType.DEFAULT_GAME] = arrayListOf(
-            setUpMediaPlayer(context, R.raw.music_default_game_1),
-            setUpMediaPlayer(context, R.raw.music_default_game_2),
-            setUpMediaPlayer(context, R.raw.music_default_game_3)
+        cache[MusicType.MENU] = arrayListOf(
+            R.raw.music_menu_1
+        )
+        cache[MusicType.EASY] = arrayListOf(
+            R.raw.music_easy_1,
+            R.raw.music_easy_2,
+            R.raw.music_easy_3,
+            R.raw.music_easy_4
+        )
+        cache[MusicType.HARD] = arrayListOf(
+            R.raw.music_hard_1,
+            R.raw.music_hard_2,
+            R.raw.music_hard_3,
+            R.raw.music_hard_4
         )
     }
 
-    private fun setUpMediaPlayer(context: Context, musicResourceId: Int): MediaPlayer {
+    private fun setUpMediaPlayer(context: Context, @IntegerRes musicResourceId: Int): MediaPlayer {
         val musicMP = MediaPlayer.create(context, musicResourceId)
         musicMP.isLooping = true
         musicMP.setAudioAttributes(
@@ -85,8 +95,9 @@ class AudioService(context: Context) {
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun stop(): AudioService {
-        currentMediaPlayer?.pause()
-        currentMediaPlayer?.seekTo(0)
+        currentMediaPlayer?.stop()
+        currentMediaPlayer?.release()
+        currentMediaPlayer = null
         return this
     }
 
@@ -94,9 +105,11 @@ class AudioService(context: Context) {
         if (currentMusicType != musicType) {
             stop()
             currentMusicType = musicType
-            currentMediaPlayer = cache[musicType]?.random()
-            if (!isPaused) {
-                start()
+            cache[musicType]?.random()?.let {
+                currentMediaPlayer = setUpMediaPlayer(context, it)
+                if (!isPaused) {
+                    start()
+                }
             }
         }
         return this
