@@ -6,7 +6,6 @@ import com.example.touchreflex.draw.CustomDrawableManager
 class InfoTextDrawableManager(
     private val elements: ArrayList<InfoText>
 ) : CustomDrawableManager {
-
     override fun init(): CustomDrawableManager {
         elements.forEach { it.onStartDrawing() }
         return this
@@ -23,5 +22,4 @@ class InfoTextDrawableManager(
     }
 
     override fun onStop() {}
-
 }

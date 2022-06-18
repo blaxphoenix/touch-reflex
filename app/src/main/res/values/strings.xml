@@ -3,11 +3,13 @@
     <string name="start_game">START GAME</string>
     <string name="restart_game">RESTART GAME</string>
     <string name="game_over">GAME OVER</string>
-    <string name="info_high_score">High Score: %1$d</string>
-    <string name="info_current_score">Current Score: %1$d</string>
-    <string name="game_description_start_game_1">Tap all bubbles before they disappear</string>
+    <string name="info_high_score">%1$s High Score: %2$d</string>
+    <string name="info_current_score">%1$s Current Score: %2$d</string>
+    <string name="game_description_start_game_1">Tap all the bubbles before they disappear</string>
     <string name="game_description_start_game_2">Or the game is over!</string>
     <string name="restart_game_new_high_score">NEW HIGH SCORE!</string>
     <string name="restart_game_motivation">Maybe next time…</string>
     <string name="back_button_snack_bar">Press back again to leave</string>
+    <string name="game_mode_easy">Easy</string>
+    <string name="game_mode_hard">Hard</string>
 </resources>

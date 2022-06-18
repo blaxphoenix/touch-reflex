@@ -2,6 +2,7 @@ package com.example.touchreflex.draw.text
 
 import android.graphics.Canvas
 import android.view.View
+import androidx.annotation.ColorInt
 import androidx.core.content.res.ResourcesCompat
 import com.example.touchreflex.R
 
@@ -12,7 +13,7 @@ class SimpleInfoText(
     private var x: Float? = null,
     private var y: Float? = null,
     textSize: Float = 100f,
-    color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
+    @ColorInt color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
 ) : InfoText(parentView, textSize, color) {
 
     override fun onStartDrawing() {}
@@ -37,5 +38,7 @@ class SimpleInfoText(
         x = newX
         y = newY
     }
+
+    override fun isInBoundary(touchX: Float, touchY: Float): Boolean = false
 
 }

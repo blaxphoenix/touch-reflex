@@ -3,6 +3,7 @@ package com.example.touchreflex.draw.text
 import android.graphics.Paint
 import android.text.TextPaint
 import android.view.View
+import androidx.annotation.ColorInt
 import com.example.touchreflex.R
 import com.example.touchreflex.draw.CustomDrawable
 import com.example.touchreflex.utils.FontCache
@@ -10,8 +11,14 @@ import com.example.touchreflex.utils.FontCache
 abstract class InfoText(
     private val parentView: View,
     protected var textSize: Float = 100f,
-    private val color: Int
+    @ColorInt color: Int
 ) : CustomDrawable {
+
+    @ColorInt var color: Int = color
+        set(value) {
+            field = value
+            paint.color = value
+        }
 
     protected val paint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
 

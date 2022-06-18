@@ -4,35 +4,37 @@ import android.graphics.Canvas
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import com.example.touchreflex.db.GameMode
 import com.example.touchreflex.draw.CustomDrawableManager
 import com.example.touchreflex.draw.ReflexAnimationCallback
 import com.example.touchreflex.utils.Utils
-import java.util.*
+import java.util.concurrent.ConcurrentLinkedDeque
 
-class InfiniteCompositeCircleDrawableManager(
+open class InfiniteCompositeCircleDrawableManager(
     private val parentView: View,
     private val callback: ReflexAnimationCallback? = null
 ) : CustomDrawableManager {
 
-    private val circles: LinkedList<CompositeCircle> = LinkedList()
+    protected val circles: ConcurrentLinkedDeque<CompositeCircle> = ConcurrentLinkedDeque()
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val radius: Float = 90f
-    private val startCircleDuration: Long = 3500L
-    private val startCircleInterval: Long = 1750L
-    private val minCircleDuration: Long = 2250L
-    private val minCircleInterval: Long = 750L
-    private var circleDuration: Long = startCircleDuration
-    private var circleInterval: Long = startCircleInterval
-    private var hue: Float = 0f
 
+    var settings: CircleManagerSettings = CircleManagerSettings.EASY
+    private var circleDuration: Long = settings.startCircleDuration
+    private var circleInterval: Long = settings.startCircleInterval
+
+    private val radius: Float = 90f
+    private var hue: Float = 0f
+    protected var alpha: Int = 0xFF
     private val marginModifier = 1.10f
 
     override fun init(): CustomDrawableManager {
-        circleDuration = startCircleDuration
-        circleInterval = startCircleInterval
+        circleDuration = settings.startCircleDuration
+        circleInterval = settings.startCircleInterval
         postDelayed(buildCompositeCircle(), initialDelay = 250)
-        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval)
-        postDelayed(buildCompositeCircle(), false, 250, startCircleInterval * 2)
+        if (settings.gameMode == GameMode.EASY) {
+            postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval)
+        }
+        postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval * 2)
         return this
     }
 
@@ -62,7 +64,8 @@ class InfiniteCompositeCircleDrawableManager(
             y,
             radius,
             circleDuration,
-            hue
+            hue,
+            alpha
         )
     }
 
@@ -101,30 +104,33 @@ class InfiniteCompositeCircleDrawableManager(
         }
     }
 
-    private fun updateTimers() {
-        if (circleDuration > minCircleDuration) {
-            var modifier = 80L
-            if (minCircleDuration / circleDuration <= 0.5) {
-                modifier = 120L
-            }
-            val updatedCircleDuration = circleDuration - (circleDuration / modifier)
-            circleDuration = if (updatedCircleDuration >= minCircleDuration) {
+    protected open fun updateTimers() {
+        if (circleDuration > settings.minCircleDuration) {
+            val percentage: Float = settings.minCircleDuration / circleDuration.toFloat() * 100
+            println("durationPercentage: $percentage% = (${settings.minCircleDuration} / ${circleDuration.toFloat()} * 100)")
+            val modifier: Long? =
+                settings.circleDurationDecelerationMap[percentage.toInt()]
+            println("durationModifier: $modifier")
+            val updatedCircleDuration = circleDuration - (circleDuration / modifier!!)
+            circleDuration = if (updatedCircleDuration >= settings.minCircleDuration) {
                 updatedCircleDuration
             } else {
-                minCircleDuration
+                settings.minCircleDuration
             }
+            println("updatedCircleDuration: $updatedCircleDuration")
         }
-        if (circleInterval > minCircleInterval) {
-            var modifier = 60L
-            if (minCircleInterval / circleInterval <= 0.5) {
-                modifier = 120L
-            }
-            val updatedCircleInterval = circleInterval - (circleInterval / modifier)
-            circleInterval = if (updatedCircleInterval >= minCircleInterval) {
+        if (circleInterval > settings.minCircleInterval) {
+            val percentage: Float = settings.minCircleInterval / circleInterval.toFloat() * 100
+            println("intervalPercentage: $percentage% = (${settings.minCircleInterval} / ${circleInterval.toFloat()} * 100)")
+            val modifier: Long? = settings.circleIntervalDecelerationMap[percentage.toInt()]
+            println("intervalModifier: $modifier")
+            val updatedCircleInterval = circleInterval - (circleInterval / modifier!!)
+            circleInterval = if (updatedCircleInterval >= settings.minCircleInterval) {
                 updatedCircleInterval
             } else {
-                minCircleInterval
+                settings.minCircleInterval
             }
+            println("updatedCircleInterval: $updatedCircleInterval")
         }
     }
 
@@ -139,10 +145,10 @@ class InfiniteCompositeCircleDrawableManager(
                 break
             }
         }
-        if (toRemove != null) {
+        toRemove?.let {
             callback?.onScored()
+            circles.remove(it)
         }
-        circles.remove(toRemove)
     }
 
     override fun onPause() {
