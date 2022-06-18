@@ -1,5 +1,5 @@
 package com.example.touchreflex.utils
 
 enum class MusicType {
-    MENU, DEFAULT_GAME
+    MENU, EASY, HARD
 }

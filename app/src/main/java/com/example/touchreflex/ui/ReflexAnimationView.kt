@@ -311,7 +311,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     private fun initGame() {
         audioService
             .playConfirmSound()
-            .switchMusic(MusicType.DEFAULT_GAME)
+            .switchMusic(gameMode.musicType)
         state = GAME
         currentTotalScore = 0
         inGameCurrentScoreText.text = currentTotalScore.toString()
