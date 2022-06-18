@@ -117,30 +117,24 @@ open class InfiniteCompositeCircleDrawableManager(
     protected open fun updateTimers() {
         if (circleDuration > settings.minCircleDuration) {
             val percentage: Float = settings.minCircleDuration / circleDuration.toFloat() * 100
-            println("durationPercentage: $percentage% = (${settings.minCircleDuration} / ${circleDuration.toFloat()} * 100)")
             val modifier: Long? =
                 settings.circleDurationDecelerationMap[percentage.toInt()]
-            println("durationModifier: $modifier")
             val updatedCircleDuration = circleDuration - (circleDuration / modifier!!)
             circleDuration = if (updatedCircleDuration >= settings.minCircleDuration) {
                 updatedCircleDuration
             } else {
                 settings.minCircleDuration
             }
-            println("updatedCircleDuration: $updatedCircleDuration")
         }
         if (circleInterval > settings.minCircleInterval) {
             val percentage: Float = settings.minCircleInterval / circleInterval.toFloat() * 100
-            println("intervalPercentage: $percentage% = (${settings.minCircleInterval} / ${circleInterval.toFloat()} * 100)")
             val modifier: Long? = settings.circleIntervalDecelerationMap[percentage.toInt()]
-            println("intervalModifier: $modifier")
             val updatedCircleInterval = circleInterval - (circleInterval / modifier!!)
             circleInterval = if (updatedCircleInterval >= settings.minCircleInterval) {
                 updatedCircleInterval
             } else {
                 settings.minCircleInterval
             }
-            println("updatedCircleInterval: $updatedCircleInterval")
         }
     }
 

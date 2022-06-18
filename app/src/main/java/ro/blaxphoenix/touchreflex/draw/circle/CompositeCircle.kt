@@ -35,7 +35,6 @@ class CompositeCircle(
     var animatorValue: Float = animatorValue
         set(value) {
             field = value
-            println("animatorValue: $animatorValue")
             animator?.setFloatValues(0f, value)
         }
     private val strokeAlpha = alpha / 2
