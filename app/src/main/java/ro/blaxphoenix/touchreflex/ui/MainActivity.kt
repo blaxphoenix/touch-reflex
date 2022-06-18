@@ -9,12 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.google.android.material.snackbar.Snackbar
 import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.TouchReflex
 import ro.blaxphoenix.touchreflex.utils.AudioService
 import ro.blaxphoenix.touchreflex.utils.GameState.START
 import ro.blaxphoenix.touchreflex.utils.MusicType
-import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 

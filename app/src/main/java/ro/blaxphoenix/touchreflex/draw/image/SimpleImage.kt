@@ -15,7 +15,8 @@ class SimpleImage(
     private var height: Int
 ) : CustomDrawable {
 
-    @ColorInt var color: Int = color
+    @ColorInt
+    var color: Int = color
         set(value) {
             field = value
             DrawableCompat.setTint(wrappedDrawable, color)

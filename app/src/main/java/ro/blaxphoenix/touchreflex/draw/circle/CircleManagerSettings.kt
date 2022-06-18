@@ -1,8 +1,8 @@
 package ro.blaxphoenix.touchreflex.draw.circle
 
+import com.google.common.collect.RangeMap
 import ro.blaxphoenix.touchreflex.db.GameMode
 import ro.blaxphoenix.touchreflex.utils.Utils
-import com.google.common.collect.RangeMap
 
 enum class CircleManagerSettings(
     val gameMode: GameMode,

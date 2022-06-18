@@ -45,6 +45,7 @@ open class InfiniteCompositeCircleDrawableManager(
         var y: Float
         var tries = 0
         do {
+            // TODO save the most optimal one in case it goes past the limit to use that
             x = Utils.nextFloat(
                 radius * marginModifier,
                 parentView.width.toFloat() - (radius * marginModifier)
@@ -69,7 +70,7 @@ open class InfiniteCompositeCircleDrawableManager(
         )
     }
 
-    private fun updateHue() {
+    protected open fun updateHue() {
         hue = if (hue < 360) {
             hue + 5
         } else {

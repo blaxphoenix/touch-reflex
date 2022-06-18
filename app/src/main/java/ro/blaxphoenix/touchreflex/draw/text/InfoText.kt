@@ -14,7 +14,8 @@ abstract class InfoText(
     @ColorInt color: Int
 ) : CustomDrawable {
 
-    @ColorInt var color: Int = color
+    @ColorInt
+    var color: Int = color
         set(value) {
             field = value
             paint.color = value

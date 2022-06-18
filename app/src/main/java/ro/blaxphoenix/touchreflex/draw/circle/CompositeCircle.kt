@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
 import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
@@ -21,15 +22,17 @@ data class CompositeCircle(
     val yCenter: Float,
     private var radius: Float,
     private val duration: Long,
+    @FloatRange(from = 0.0, to = 360.0)
     private val hue: Float,
     @IntRange(from = 0, to = 255)
     private val alpha: Int = 0xFF
 ) : CustomDrawable {
 
+    // TODO rename to radius and use only for radius and as setting?
     val animatorValue: Float = 100f
     private val strokeAlpha = alpha / 2
-    private val saturation: Float = 0.5f
-    private val luminosity: Float = 0.5f
+    private val baseSaturation: Float = 0.5f
+    private val baseLuminosity: Float = 0.5f
 
     private val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -52,11 +55,25 @@ data class CompositeCircle(
         setColors()
     }
 
-    private fun setColors(modifier: Float = 0f) {
+    private fun setColors(saturationModifier: Float = 0f, luminosityModifier: Float = 0f) {
         paintFill.color =
-            Color.HSVToColor(alpha, floatArrayOf(hue, saturation + modifier, luminosity + modifier))
+            Color.HSVToColor(
+                alpha,
+                floatArrayOf(
+                    hue,
+                    baseSaturation + saturationModifier,
+                    baseLuminosity + luminosityModifier
+                )
+            )
         paintStroke.color =
-            Color.HSVToColor(alpha - strokeAlpha, floatArrayOf(hue, saturation + modifier, luminosity + modifier))
+            Color.HSVToColor(
+                alpha - strokeAlpha,
+                floatArrayOf(
+                    hue,
+                    baseSaturation + saturationModifier,
+                    baseLuminosity + luminosityModifier
+                )
+            )
     }
 
     private fun initAnimator() {
@@ -65,9 +82,12 @@ data class CompositeCircle(
         animator?.interpolator = AccelerateDecelerateInterpolator()
         animator?.addUpdateListener {
             val value = it.animatedValue as Float
-            val modifier = (1 - saturation) * (value / 100)
             radius = value
-            setColors(modifier)
+            val percentageSubunit = it.animatedValue as Float / animatorValue
+            setColors(
+                (1 - baseSaturation) * percentageSubunit,
+                (1 - baseLuminosity) * percentageSubunit
+            )
             parentView.invalidate()
         }
         animator?.addListener(object : AnimatorListenerAdapter() {

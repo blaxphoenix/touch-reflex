@@ -1,9 +1,9 @@
 package ro.blaxphoenix.touchreflex.ui
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.launch
 import ro.blaxphoenix.touchreflex.db.HighScoreItem
 import ro.blaxphoenix.touchreflex.db.HighScoreRepository
-import kotlinx.coroutines.launch
 
 class HighScoreViewModel(private val highScoreRepository: HighScoreRepository) : ViewModel() {
 

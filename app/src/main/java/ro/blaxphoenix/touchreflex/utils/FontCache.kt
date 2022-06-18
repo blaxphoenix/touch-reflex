@@ -9,7 +9,7 @@ class FontCache {
 
     companion object {
         private val CACHE: Hashtable<Int, Typeface> = Hashtable()
-        
+
         fun get(fontResource: Int, context: Context): Typeface? =
             CACHE[fontResource] ?: ResourcesCompat.getFont(context, fontResource)
     }
