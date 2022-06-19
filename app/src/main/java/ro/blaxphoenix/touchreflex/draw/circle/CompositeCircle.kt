@@ -87,6 +87,8 @@ class CompositeCircle(
         animator = ValueAnimator.ofFloat(0f, animatorValue)
         animator?.duration = Utils.nextLongWithMargin(duration)
         animator?.interpolator = AccelerateDecelerateInterpolator()
+        // TODO 2 update listeners (isInverted)
+        // TODO isInverted = reduce saturation to make the circles go white before disappearing
         animator?.addUpdateListener {
             val value = it.animatedValue as Float
             radius = value
@@ -97,6 +99,7 @@ class CompositeCircle(
             )
             parentView.invalidate()
         }
+        // TODO 2 onAnimationEnd listeners (isInverted)
         animator?.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 if (isInverted) {

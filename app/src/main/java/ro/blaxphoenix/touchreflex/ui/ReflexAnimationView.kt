@@ -298,8 +298,8 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun setDrawableAttributes() {
-        demoCircleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width)
-        circleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width)
+        demoCircleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width, 1f)
+        circleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width, 1f)
         startAnimatedText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
         startHighScoreInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
         startDescriptionInfoText1.textSize = Utils.getSize(Utils.MAX_SMALL_TEXT_SIZE, width)
