@@ -6,11 +6,11 @@ import android.os.Looper
 import android.view.View
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
-import ro.blaxphoenix.touchreflex.db.GameMode
 import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
 import ro.blaxphoenix.touchreflex.draw.ReflexAnimationCallback
 import ro.blaxphoenix.touchreflex.utils.Utils
 import java.util.concurrent.ConcurrentLinkedDeque
+import kotlin.math.roundToLong
 
 open class InfiniteCompositeCircleDrawableManager(
     private val parentView: View,
@@ -37,11 +37,17 @@ open class InfiniteCompositeCircleDrawableManager(
     override fun init(): CustomDrawableManager {
         circleDuration = settings.startCircleDuration
         circleInterval = settings.startCircleInterval
-        postDelayed(buildCompositeCircle(), initialDelay = 250)
-        if (settings.gameMode == GameMode.EASY) {
-            postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval)
+        postDelayed(
+            buildCompositeCircle(),
+            250
+        )
+        for (i in 2 until settings.numberOfCirclesToStartWith) {
+            postDelayed(
+                buildCompositeCircle(),
+                delayMultiplier = i.toFloat() / settings.numberOfCirclesToStartWith,
+                //updateTimers = false
+            )
         }
-        postDelayed(buildCompositeCircle(), false, 250, settings.startCircleInterval * 2)
         return this
     }
 
@@ -99,43 +105,55 @@ open class InfiniteCompositeCircleDrawableManager(
 
     private fun postDelayed(
         circle: CompositeCircle,
-        updateTimers: Boolean = true,
-        initialDelay: Long? = null,
-        extraDelay: Long = 0L
+        customDelay: Long? = null,
+        delayMultiplier: Float = 1f,
+        updateTimers: Boolean = true
     ) {
-        val delay = initialDelay ?: Utils.nextLongWithMargin(circleInterval, circleInterval / 3L)
+        val delay = customDelay ?: (Utils.nextLongWithMargin(
+            circleInterval,
+            circleInterval / 4L
+        ) * delayMultiplier).roundToLong()
         circles.add(circle)
         mainHandler.postDelayed({
             circle.onStartDrawing()
             postDelayed(buildCompositeCircle())
-        }, extraDelay + delay)
+        }, delay)
         if (updateTimers) {
             updateTimers()
         }
     }
 
     protected open fun updateTimers() {
+        // TODO remove all debugger println(s)
         if (circleDuration > settings.minCircleDuration) {
             val percentage: Float = settings.minCircleDuration / circleDuration.toFloat() * 100
             val modifier: Long? =
                 settings.circleDurationDecelerationMap[percentage.toInt()]
+            println("#### durationPercentage: $percentage")
+            println("#### circleDurationModifier: $modifier")
             val updatedCircleDuration = circleDuration - (circleDuration / modifier!!)
             circleDuration = if (updatedCircleDuration >= settings.minCircleDuration) {
                 updatedCircleDuration
             } else {
                 settings.minCircleDuration
             }
+            println("#### circleDuration: $circleDuration")
         }
         if (circleInterval > settings.minCircleInterval) {
             val percentage: Float = settings.minCircleInterval / circleInterval.toFloat() * 100
-            val modifier: Long? = settings.circleIntervalDecelerationMap[percentage.toInt()]
+            val modifier: Long? =
+                settings.circleIntervalDecelerationMap[percentage.toInt()]
+            println("#### intervalPercentage: $percentage")
+            println("#### circleIntervalModifier: $modifier")
             val updatedCircleInterval = circleInterval - (circleInterval / modifier!!)
             circleInterval = if (updatedCircleInterval >= settings.minCircleInterval) {
                 updatedCircleInterval
             } else {
                 settings.minCircleInterval
             }
+            println("#### circleInterval: $circleInterval")
         }
+        println("---------")
     }
 
     override fun onDraw(canvas: Canvas) = circles.forEach { it.onDraw(canvas) }

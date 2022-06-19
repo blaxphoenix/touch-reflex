@@ -18,7 +18,6 @@ import ro.blaxphoenix.touchreflex.draw.DefaultDrawableManager
 import ro.blaxphoenix.touchreflex.draw.ReflexAnimationCallback
 import ro.blaxphoenix.touchreflex.draw.button.SingleSelectorButton
 import ro.blaxphoenix.touchreflex.draw.button.SingleSelectorButtonDrawableManager
-import ro.blaxphoenix.touchreflex.draw.circle.CircleManagerSettings
 import ro.blaxphoenix.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
 import ro.blaxphoenix.touchreflex.draw.image.SimpleImage
 import ro.blaxphoenix.touchreflex.draw.text.AnimatedInfoText
@@ -464,12 +463,14 @@ class ReflexAnimationView(context: Context) : View(context) {
                             viewCallback.gameModeButtonEasy.onTouch(touchX, touchY)
                             viewCallback.gameModeButtonHard.onTouch(touchX, touchY)
                             viewCallback.gameMode = GameMode.EASY
+                            viewCallback.audioService.playConfirmSound()
                         }
                     } else if (viewCallback.gameModeButtonHard.isInBoundary(touchX, touchY)) {
                         if (!viewCallback.gameModeButtonHard.isSelected) {
                             viewCallback.gameModeButtonHard.onTouch(touchX, touchY)
                             viewCallback.gameModeButtonEasy.onTouch(touchX, touchY)
                             viewCallback.gameMode = GameMode.HARD
+                            viewCallback.audioService.playConfirmSound()
                         }
                     }
                 }
@@ -487,6 +488,7 @@ class ReflexAnimationView(context: Context) : View(context) {
                     // TODO make it also work on START screen to exit app?
                     if (viewCallback.backButton?.isInBoundary(touchX, touchY) == true) {
                         viewCallback.state = START
+                        viewCallback.audioService.playConfirmSound()
                     }
                 }
                 else -> {
@@ -495,25 +497,6 @@ class ReflexAnimationView(context: Context) : View(context) {
             return true
         }
 
-        override fun onLongPress(e: MotionEvent?) {
-            when (viewCallback.state) {
-                START -> {
-                    viewCallback.circleManager.settings =
-                        if (viewCallback.circleManager.settings == CircleManagerSettings.EASY) {
-                            CircleManagerSettings.HARD
-                        } else {
-                            CircleManagerSettings.EASY
-                        }
-                    viewCallback.initGame()
-                }
-                RESTART -> {
-                    viewCallback.initGame()
-                }
-                else -> {
-                    // nothing
-                }
-            }
-        }
     }
 
 }
