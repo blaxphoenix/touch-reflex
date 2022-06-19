@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TouchReflex</string>
+    <string name="app_name">Touch Reflex Game</string>
     <string name="start_game">START GAME</string>
     <string name="restart_game">RESTART GAME</string>
     <string name="game_over">GAME OVER</string>
