@@ -281,7 +281,6 @@ class ReflexAnimationView(context: Context) : View(context) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         highScoreViewModel.allHighScoreItems.observeForever(highScoreObserver)
-        startTextManager.init()
     }
 
     override fun onDetachedFromWindow() {
@@ -489,6 +488,9 @@ class ReflexAnimationView(context: Context) : View(context) {
                     if (viewCallback.backButton?.isInBoundary(touchX, touchY) == true) {
                         viewCallback.state = START
                         viewCallback.audioService.playConfirmSound()
+                        // TODO better solution?
+                        viewCallback.demoCircleManager.onStop()
+                        viewCallback.demoCircleManager.init()
                     }
                 }
                 else -> {
