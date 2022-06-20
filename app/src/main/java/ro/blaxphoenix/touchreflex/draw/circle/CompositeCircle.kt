@@ -46,7 +46,8 @@ class CompositeCircle(
     private val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
     private var animator: ValueAnimator? = null
     private var isInverted = false
-    private var isDisabled = true
+    var isDisabled = true
+        private set
     var isDone = false
         private set
 

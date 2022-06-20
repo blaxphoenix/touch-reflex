@@ -11,6 +11,7 @@ import kotlin.random.Random
 
 class Utils {
     companion object {
+        const val MAX_NUMBER_OF_CIRCLES_AT_ONCE = 12
         @Suppress("MemberVisibilityCanBePrivate")
         const val DEFAULT_SCREEN_WIDTH: Int = 1080
         const val MAX_CIRCLE_RADIUS: Float = 120f

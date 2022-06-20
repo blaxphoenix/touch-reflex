@@ -18,6 +18,7 @@ open class InfiniteCompositeCircleDrawableManager(
 ) : CustomDrawableManager {
 
     protected val circles: ConcurrentLinkedDeque<CompositeCircle> = ConcurrentLinkedDeque()
+    private val circlesNotDrawn: ConcurrentLinkedDeque<CompositeCircle> = ConcurrentLinkedDeque()
     private val mainHandler = Handler(Looper.getMainLooper())
 
     var settings: CircleManagerSettings = CircleManagerSettings.EASY
@@ -45,7 +46,6 @@ open class InfiniteCompositeCircleDrawableManager(
             postDelayed(
                 buildCompositeCircle(),
                 delayMultiplier = i.toFloat() / settings.numberOfCirclesToStartWith,
-                //updateTimers = false
             )
         }
         return this
@@ -115,7 +115,12 @@ open class InfiniteCompositeCircleDrawableManager(
         ) * delayMultiplier).roundToLong()
         circles.add(circle)
         mainHandler.postDelayed({
-            circle.onStartDrawing()
+            if (circles.count { !it.isDisabled } >= Utils.MAX_NUMBER_OF_CIRCLES_AT_ONCE) {
+                println(circles)
+                circlesNotDrawn.add(circle)
+            } else {
+                circle.onStartDrawing()
+            }
             postDelayed(buildCompositeCircle())
         }, delay)
         if (updateTimers) {
@@ -167,9 +172,13 @@ open class InfiniteCompositeCircleDrawableManager(
                 break
             }
         }
-        toRemove?.let {
+        toRemove?.let { c1 ->
             callback?.onScored()
-            circles.remove(it)
+            circles.remove(c1)
+            circlesNotDrawn.firstOrNull()?.let { c2 ->
+                c2.onStartDrawing()
+                circlesNotDrawn.remove(c2)
+            }
         }
     }
 
