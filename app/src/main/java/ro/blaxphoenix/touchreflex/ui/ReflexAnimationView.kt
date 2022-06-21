@@ -89,8 +89,7 @@ class ReflexAnimationView(context: Context) : View(context) {
     private val highScoreObserver = Observer<MutableList<HighScoreItem>> { list ->
         list?.let {
             list.forEach { highScores[it.gameMode] = it.score }
-            val item = list.firstOrNull { it.gameMode == gameMode }
-            item?.let {
+            list.firstOrNull { it.gameMode == gameMode }?.let {
                 highScores[it.gameMode] = it.score
                 startHighScoreInfoText.text =
                     context.getString(

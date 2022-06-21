@@ -3,6 +3,7 @@ package ro.blaxphoenix.touchreflex.draw.button
 import android.graphics.Canvas
 import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
 
+// TODO create clickable drawable manager
 class SingleSelectorButtonDrawableManager(
     private val elements: ArrayList<SingleSelectorButton>
 ) : CustomDrawableManager {
