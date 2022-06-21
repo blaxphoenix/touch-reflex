@@ -1,5 +1,6 @@
 package ro.blaxphoenix.touchreflex.utils
 
+import androidx.annotation.IntRange
 import com.google.common.collect.Range
 import com.google.common.collect.RangeMap
 import com.google.common.collect.TreeRangeMap
@@ -11,9 +12,12 @@ import kotlin.random.Random
 
 class Utils {
     companion object {
-        const val MAX_NUMBER_OF_CIRCLES_AT_ONCE = 12
+        @IntRange(from = 1, to = 15)
+        const val MAX_NUMBER_OF_CIRCLES_AT_ONCE: Int = 12
+
         @Suppress("MemberVisibilityCanBePrivate")
         const val DEFAULT_SCREEN_WIDTH: Int = 1080
+
         const val MAX_CIRCLE_RADIUS: Float = 120f
         const val MAX_SMALL_TEXT_SIZE: Float = 60f
         const val MAX_DEFAULT_TEXT_SIZE: Float = 100f

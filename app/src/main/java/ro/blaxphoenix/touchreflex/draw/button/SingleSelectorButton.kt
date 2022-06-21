@@ -14,8 +14,8 @@ class SingleSelectorButton(
     parentView: View,
     private var centerX: Float,
     private var centerY: Float,
-    @FloatRange(from = 0.0, to = Utils.MAX_BUTTON_HEIGHT.toDouble()) private var height: Float,
     @FloatRange(from = 0.0, to = Utils.MAX_BUTTON_WIDTH.toDouble()) private var width: Float,
+    @FloatRange(from = 0.0, to = Utils.MAX_BUTTON_HEIGHT.toDouble()) private var height: Float,
     text: String,
     @ColorInt color: Int,
     @ColorInt textColor: Int,
@@ -91,8 +91,8 @@ class SingleSelectorButton(
     fun setNewAttributes(
         newCenterX: Float,
         newCenterY: Float,
-        newHeight: Float,
         newWidth: Float,
+        newHeight: Float,
         newTextSize: Float
     ) {
         centerX = newCenterX

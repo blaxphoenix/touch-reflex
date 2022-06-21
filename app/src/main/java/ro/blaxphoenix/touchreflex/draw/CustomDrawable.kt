@@ -6,5 +6,7 @@ interface CustomDrawable {
     fun onStartDrawing()
     fun onDraw(canvas: Canvas)
     fun onDisable()
+
+    // TODO add onTouch()?
     fun isInBoundary(touchX: Float, touchY: Float): Boolean
 }

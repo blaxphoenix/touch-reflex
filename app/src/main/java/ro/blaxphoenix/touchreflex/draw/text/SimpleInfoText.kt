@@ -33,9 +33,8 @@ class SimpleInfoText(
             if (x != null && y != null) {
                 canvas.drawText(text, x!!, y!!, paint)
             } else {
-                val xPos = canvas.width / 2f
-                x = xPos
-                canvas.drawText(text, xPos, this.y!!, paint)
+                x = canvas.width / 2f
+                canvas.drawText(text, x!!, this.y!!, paint)
             }
         }
     }
@@ -51,7 +50,7 @@ class SimpleInfoText(
 
     // TODO find a better solution or good enough?
     override fun onTextSizeChanged(textSize: Float) {
-        this.y = textSize - ((paint.descent() + paint.ascent()) / 2)
+        y = textSize - ((paint.descent() + paint.ascent()) / 2)
     }
 
 }
