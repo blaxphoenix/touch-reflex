@@ -4,7 +4,7 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.media.SoundPool
-import androidx.annotation.IntegerRes
+import androidx.annotation.RawRes
 import ro.blaxphoenix.touchreflex.R
 import java.util.*
 
@@ -48,17 +48,16 @@ class AudioService(val context: Context) {
         )
     }
 
-    private fun setUpMediaPlayer(context: Context, @IntegerRes musicResourceId: Int): MediaPlayer {
-        val musicMP = MediaPlayer.create(context, musicResourceId)
-        musicMP.isLooping = true
-        musicMP.setAudioAttributes(
-            AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_GAME)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build()
-        )
-        return musicMP
-    }
+    private fun setUpMediaPlayer(context: Context, @RawRes musicResourceId: Int): MediaPlayer =
+        MediaPlayer.create(context, musicResourceId).apply {
+            isLooping = true
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+            )
+        }
 
     fun playConfirmSound(): AudioService {
         if (!isPaused) soundPool.play(confirmSoundId, 1f, 1f, 0, 0, 1f)
