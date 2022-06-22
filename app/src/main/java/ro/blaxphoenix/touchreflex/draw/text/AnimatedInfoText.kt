@@ -15,11 +15,11 @@ import ro.blaxphoenix.touchreflex.utils.Utils
 
 class AnimatedInfoText(
     private val parentView: View,
-    private val text: String,
-    @FloatRange(from = 0.0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
+    text: String,
+    @FloatRange(from = .0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
     textSize: Float = Utils.MAX_DEFAULT_TEXT_SIZE,
     @ColorInt color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
-) : InfoText(parentView, textSize, color) {
+) : InfoText(parentView, text, textSize, color) {
 
     private var animator: ValueAnimator? = null
     private var invert = false
@@ -33,7 +33,7 @@ class AnimatedInfoText(
 
     // TODO write a separate AnimatedCustomDrawable interface for animator related stuff
     private fun initAnimator() {
-        animator = ValueAnimator.ofFloat(0f, textSize * 0.4f)
+        animator = ValueAnimator.ofFloat(0f, textSize * .4f)
         animator?.duration = 1300
         animator?.interpolator = AccelerateDecelerateInterpolator()
         animator?.addUpdateListener {
@@ -79,7 +79,7 @@ class AnimatedInfoText(
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean = false
 
     override fun onTextSizeChanged(textSize: Float) {
-        animator?.setFloatValues(0f, textSize * 0.4f)
+        animator?.setFloatValues(0f, textSize * .4f)
     }
 
 }

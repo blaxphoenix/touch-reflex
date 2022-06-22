@@ -21,12 +21,12 @@ class CompositeCircle(
     private val parentView: View,
     val xCenter: Float,
     val yCenter: Float,
-    @FloatRange(from = 0.0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
+    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
     private var radius: Float = Utils.MAX_CIRCLE_RADIUS,
-    @FloatRange(from = 0.0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
+    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
     animatorValue: Float,
     private val duration: Long,
-    @FloatRange(from = 0.0, to = 360.0)
+    @FloatRange(from = .0, to = 360.0)
     private val hue: Float,
     @IntRange(from = 0, to = 255)
     private val alpha: Int = 0xFF
@@ -39,8 +39,8 @@ class CompositeCircle(
             animator?.setFloatValues(0f, value)
         }
     private val strokeAlpha = alpha / 2
-    private val baseSaturation: Float = 0.5f
-    private val baseLuminosity: Float = 0.5f
+    private val baseSaturation: Float = .5f
+    private val baseLuminosity: Float = .5f
 
     private val paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
     private val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -140,7 +140,7 @@ class CompositeCircle(
     override fun onDraw(canvas: Canvas) {
         if (!isDisabled) {
             canvas.drawCircle(xCenter, yCenter, radius, paintStroke)
-            canvas.drawCircle(xCenter, yCenter, radius - (radius * 0.25f), paintFill)
+            canvas.drawCircle(xCenter, yCenter, radius - (radius * .25f), paintFill)
         }
     }
 

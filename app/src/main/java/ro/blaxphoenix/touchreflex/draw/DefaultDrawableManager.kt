@@ -21,4 +21,6 @@ class DefaultDrawableManager(
     }
 
     override fun onStop() {}
+
+    fun add(drawable: CustomDrawable) = elements.add(drawable)
 }

@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package ro.blaxphoenix.touchreflex.ui
 
 import androidx.lifecycle.*
@@ -15,6 +13,7 @@ class HighScoreViewModel(private val highScoreRepository: HighScoreRepository) :
     fun insert(highScoreItem: HighScoreItem) =
         viewModelScope.launch { highScoreRepository.insert(highScoreItem) }
 
+    @Suppress("unused")
     fun delete(highScoreItem: HighScoreItem) =
         viewModelScope.launch { highScoreRepository.delete(highScoreItem) }
 

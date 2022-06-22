@@ -25,10 +25,10 @@ open class InfiniteCompositeCircleDrawableManager(
     private var circleDuration: Long = settings.startCircleDuration
     private var circleInterval: Long = settings.startCircleInterval
 
-    @FloatRange(from = 0.0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
+    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
     var radius: Float = Utils.MAX_CIRCLE_RADIUS
 
-    @FloatRange(from = 0.0, to = 360.0)
+    @FloatRange(from = .0, to = 360.0)
     private var hue: Float = 0f
 
     @IntRange(from = 0, to = 255)
@@ -116,7 +116,6 @@ open class InfiniteCompositeCircleDrawableManager(
         circles.add(circle)
         mainHandler.postDelayed({
             if (circles.count { !it.isDisabled } >= Utils.MAX_NUMBER_OF_CIRCLES_AT_ONCE) {
-                println(circles)
                 circlesNotDrawn.add(circle)
             } else {
                 circle.onStartDrawing()

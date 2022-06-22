@@ -14,8 +14,8 @@ class SingleSelectorButton(
     parentView: View,
     private var centerX: Float,
     private var centerY: Float,
-    @FloatRange(from = 0.0, to = Utils.MAX_BUTTON_WIDTH.toDouble()) private var width: Float,
-    @FloatRange(from = 0.0, to = Utils.MAX_BUTTON_HEIGHT.toDouble()) private var height: Float,
+    @FloatRange(from = .0, to = Utils.MAX_BUTTON_WIDTH.toDouble()) private var width: Float,
+    @FloatRange(from = .0, to = Utils.MAX_BUTTON_HEIGHT.toDouble()) private var height: Float,
     text: String,
     @ColorInt color: Int,
     @ColorInt textColor: Int,
@@ -46,8 +46,9 @@ class SingleSelectorButton(
             }
         }
 
-    private var rect = buildRectangle()
+    private var rect: RectF = buildRectangle()
 
+    // drawables
     private val backgroundRectangle: BackgroundRectangle =
         BackgroundRectangle(parentView, rect, color)
     private val infoText: SimpleInfoText =
@@ -60,15 +61,12 @@ class SingleSelectorButton(
         )
 
     init {
+        // to call the custom setter
         this.isSelected = isSelected
     }
 
     private fun buildRectangle(): RectF =
         RectF(centerX - width / 2, centerY - height / 2, centerX + width / 2, centerY + height / 2)
-
-    override fun onStartDrawing() {}
-
-    override fun init(): CustomDrawableManager = this
 
     override fun onDraw(canvas: Canvas) {
         backgroundRectangle.onDraw(canvas)
@@ -79,10 +77,11 @@ class SingleSelectorButton(
         this.isSelected = !this.isSelected
     }
 
+    // TODO clear or impl?
+    override fun onStartDrawing() {}
+    override fun init(): CustomDrawableManager = this
     override fun onPause() {}
-
     override fun onStop() {}
-
     override fun onDisable() {}
 
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean =
@@ -108,7 +107,7 @@ class SingleSelectorButton(
         )
         backgroundRectangle.rect = rect
         infoText.textSize = newTextSize
-        infoText.setNewCoordinates(centerX, centerY + newTextSize * 0.4f)
+        infoText.setNewCoordinates(centerX, centerY + newTextSize * .4f)
     }
 
 }

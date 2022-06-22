@@ -20,13 +20,13 @@ import kotlin.math.roundToInt
 
 class ScoreTrackerAnimatedInfoText(
     private val parentView: View,
-    var text: String,
+    text: String,
     private var x: Float? = null,
     private var y: Float? = null,
-    @FloatRange(from = 0.0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
+    @FloatRange(from = .0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
     textSize: Float = Utils.MAX_DEFAULT_TEXT_SIZE,
     @ColorInt color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
-) : InfoText(parentView, textSize, color) {
+) : InfoText(parentView, text, textSize, color) {
 
     private var animator: ValueAnimator? = null
     private val animatorValue = textSize * 2f

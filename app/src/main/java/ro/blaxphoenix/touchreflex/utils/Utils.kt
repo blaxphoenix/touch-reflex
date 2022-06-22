@@ -27,7 +27,7 @@ class Utils {
         const val MAX_IMAGE_SIZE: Float = 100f
 
         // TODO better solution, reCalculate() and then cache values (enum map?)
-        fun getSize(maxSize: Float, width: Int, modifier: Float = 0.88f): Float =
+        fun getSize(maxSize: Float, width: Int, modifier: Float = .88f): Float =
             if (width >= DEFAULT_SCREEN_WIDTH) {
                 maxSize
             } else {
@@ -37,7 +37,7 @@ class Utils {
         fun nextFloat(min: Float, max: Float): Float =
             Random.nextFloat() * (max - min) + min
 
-        fun nextLongWithMargin(value: Long, margin: Long = (value * 0.05f).roundToLong()): Long =
+        fun nextLongWithMargin(value: Long, margin: Long = (value * .05f).roundToLong()): Long =
             max(0L, Random.nextLong(value - margin, value + margin))
 
         fun isInBoundaryCircle(x1: Float, y1: Float, x2: Float, y2: Float, r: Float): Boolean =

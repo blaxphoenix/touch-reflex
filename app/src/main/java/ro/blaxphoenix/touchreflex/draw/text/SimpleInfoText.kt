@@ -3,6 +3,7 @@
 package ro.blaxphoenix.touchreflex.draw.text
 
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
@@ -12,14 +13,15 @@ import ro.blaxphoenix.touchreflex.utils.Utils
 
 class SimpleInfoText(
     parentView: View,
-    var text: String,
+    text: String,
+    // TODO move to someplace more common place (interface, abstract etc.)
     var isIgnored: Boolean = false,
     x: Float? = null,
     y: Float? = null,
-    @FloatRange(from = 0.0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
+    @FloatRange(from = .0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
     textSize: Float = Utils.MAX_DEFAULT_TEXT_SIZE,
     @ColorInt color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
-) : InfoText(parentView, textSize, color) {
+) : InfoText(parentView, text, textSize, color) {
 
     var x: Float? = x
         private set
@@ -39,7 +41,9 @@ class SimpleInfoText(
         }
     }
 
-    override fun onDisable() {}
+    override fun onDisable() {
+        // TODO isIgnored set on onDisable() -> needs an onEnable() too?
+    }
 
     fun setNewCoordinates(newX: Float, newY: Float) {
         x = newX
@@ -50,7 +54,9 @@ class SimpleInfoText(
 
     // TODO find a better solution or good enough?
     override fun onTextSizeChanged(textSize: Float) {
-        y = textSize - ((paint.descent() + paint.ascent()) / 2)
+        if (paint.textAlign == Paint.Align.CENTER) {
+            y = textSize - ((paint.descent() + paint.ascent()) / 2)
+        }
     }
 
 }
