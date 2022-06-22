@@ -12,8 +12,8 @@ import ro.blaxphoenix.touchreflex.utils.Utils
 
 class SingleSelectorButton(
     parentView: View,
-    private var centerX: Float,
-    private var centerY: Float,
+    var centerX: Float,
+    var centerY: Float,
     @FloatRange(from = .0, to = Utils.MAX_BUTTON_WIDTH.toDouble()) private var width: Float,
     @FloatRange(from = .0, to = Utils.MAX_BUTTON_HEIGHT.toDouble()) private var height: Float,
     text: String,
@@ -46,7 +46,8 @@ class SingleSelectorButton(
             }
         }
 
-    private var rect: RectF = buildRectangle()
+    var rect: RectF = buildRectangle()
+        private set
 
     // drawables
     private val backgroundRectangle: BackgroundRectangle =

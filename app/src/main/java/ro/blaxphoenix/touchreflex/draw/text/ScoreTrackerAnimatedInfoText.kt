@@ -29,7 +29,7 @@ class ScoreTrackerAnimatedInfoText(
 ) : InfoText(parentView, text, textSize, color) {
 
     private var animator: ValueAnimator? = null
-    private val animatorValue = textSize * 2f
+    private var animatorValue = textSize
 
     @IntRange(from = 0, to = 255)
     private val alpha: Int = 255
@@ -87,6 +87,7 @@ class ScoreTrackerAnimatedInfoText(
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean = false
 
     override fun onTextSizeChanged(textSize: Float) {
+        animatorValue = textSize
         animator?.setFloatValues(0f, animatorValue)
     }
 

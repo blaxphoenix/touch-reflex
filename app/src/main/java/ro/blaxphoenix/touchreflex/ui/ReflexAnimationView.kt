@@ -342,16 +342,27 @@ class ReflexAnimationView(context: Context) : View(context) {
         currentScoreText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
         inGameCurrentScoreAnimatedText.textSize =
             Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        val textBounds = Rect()
-        currentScoreText.paint.getTextBounds(
-            currentScoreText.text,
-            0,
-            currentScoreText.text.length,
-            textBounds
-        )
+        // TODO move in one place (same as in setter of state?)
+        var highScoreDrawableY = 0f
+        when (state) {
+            START -> {
+                val textBounds = Rect()
+                currentScoreText.paint.getTextBounds(
+                    currentScoreText.text,
+                    0,
+                    currentScoreText.text.length,
+                    textBounds
+                )
+                highScoreDrawableY = currentScoreText.y!! - (textBounds.height() / 2f)
+            }
+            RESTART, RESTART_DELAY -> {
+                highScoreDrawableY = currentScoreText.y!! + currentScoreText.textSize
+            }
+            else -> {}
+        }
         highScoreDrawable?.setNewAttributes(
             width / 2f,
-            currentScoreText.y!! - (textBounds.height() / 2f),
+            highScoreDrawableY,
             Utils.getSize(Utils.MAX_IMAGE_SIZE, width),
             Utils.getSize(Utils.MAX_IMAGE_SIZE, width),
             Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width),
@@ -493,8 +504,8 @@ class ReflexAnimationView(context: Context) : View(context) {
                     val touchX = e.x
                     val touchY = e.y
                     // TODO implement properly with animatedText.isInBoundary()
-                    if (touchY > centerY - viewCallback.startAnimatedText.textSize * 1.5f
-                        && touchY < centerY + viewCallback.startAnimatedText.textSize * 1.5f
+                    if (touchY > centerY - viewCallback.startAnimatedText.textSize * 3f
+                        && touchY < viewCallback.gameModeButtonEasy.centerY - viewCallback.gameModeButtonEasy.rect.height()
                     ) {
                         viewCallback.initGame()
                     }
