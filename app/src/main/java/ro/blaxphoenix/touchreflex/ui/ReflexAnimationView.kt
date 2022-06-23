@@ -135,8 +135,8 @@ class ReflexAnimationView(context: Context) : View(context) {
                     scored()
                 }
 
-                override fun onGameOver() {
-                    gameOver()
+                override fun onGameOver(xCenter: Float, yCenter: Float) {
+                    gameOver(xCenter, yCenter)
                 }
             }
         )
@@ -220,6 +220,15 @@ class ReflexAnimationView(context: Context) : View(context) {
         textSize = 100f,
         color = ResourcesCompat.getColor(this.resources, R.color.red, null)
     )
+    private val restartDisappearedCircleMarkerImage: SimpleImage? =
+        ResourcesCompat.getDrawable(resources, R.drawable.custom_close_icon, null)?.let {
+            SimpleImage(
+                it,
+                ResourcesCompat.getColor(this.resources, R.color.white, null),
+                0, 0, 200, 200,
+                false
+            )
+        }
     private val restartDrawableManager: DefaultDrawableManager = DefaultDrawableManager(
         arrayListOf(
             currentScoreText,
@@ -284,7 +293,7 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     // back button
     private val backButton: SimpleImage? =
-        ResourcesCompat.getDrawable(resources, R.drawable.custom_back_button, null)?.let {
+        ResourcesCompat.getDrawable(resources, R.drawable.custom_back_icon, null)?.let {
             SimpleImage(
                 it,
                 ResourcesCompat.getColor(this.resources, gameMode.colorPrimary, null),
@@ -299,6 +308,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         }
         backButton?.let { restartDrawableManager.add(it) }
         inGameNewHighScoreImage?.let { inGameDrawableManager.add(it) }
+        restartDisappearedCircleMarkerImage?.let { restartDrawableManager.add(it, 0) }
     }
 
     fun setUpView(
@@ -422,12 +432,17 @@ class ReflexAnimationView(context: Context) : View(context) {
         currentScoreText.text = currentTotalScore.toString()
         inGameCurrentScoreAnimatedText.text = currentTotalScore.toString()
         inGameCurrentScoreAnimatedText.onStartDrawing()
-        if (currentTotalScore > highScores[gameMode]!!) {
-            inGameNewHighScoreImage?.isIgnored = false
+        if (
+            currentTotalScore > highScores[gameMode]!! &&
+            inGameNewHighScoreImage != null &&
+            inGameNewHighScoreImage.isIgnored
+        ) {
+            inGameNewHighScoreImage.isIgnored = false
+            audioService.playHighScoreSound()
         }
     }
 
-    private fun gameOver() {
+    private fun gameOver(xCenter: Float, yCenter: Float) {
         mainHandler.postDelayed({
             state = RESTART
         }, 750L)
@@ -447,6 +462,10 @@ class ReflexAnimationView(context: Context) : View(context) {
             restartNewHighScoreInfoText.isIgnored = true
             restartMotivationInfoText.isIgnored = false
         }
+        restartDisappearedCircleMarkerImage?.setNewSize(
+            x = (xCenter - restartDisappearedCircleMarkerImage.width / 2f).roundToInt(),
+            y = (yCenter - restartDisappearedCircleMarkerImage.height / 2f).roundToInt()
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -463,7 +482,6 @@ class ReflexAnimationView(context: Context) : View(context) {
             RESTART, RESTART_DELAY -> {
                 circleManager.onDraw(canvas)
                 restartDrawableManager.onDraw(canvas)
-                //backButton?.onDraw(canvas)
             }
         }
     }
