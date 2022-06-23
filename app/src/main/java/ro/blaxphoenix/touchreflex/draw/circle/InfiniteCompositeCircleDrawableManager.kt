@@ -190,9 +190,13 @@ open class InfiniteCompositeCircleDrawableManager(
     override fun onStop() {
         pauseCircles()
         circles.clear()
+        circlesNotDrawn.clear()
         mainHandler.removeCallbacksAndMessages(null)
     }
 
-    private fun pauseCircles() = circles.forEach { it.pause() }
+    private fun pauseCircles() {
+        circles.forEach { it.pause() }
+        circlesNotDrawn.forEach { it.pause() }
+    }
 
 }
