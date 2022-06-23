@@ -52,6 +52,7 @@ class BackgroundRectangle(
     override fun onStartDrawing() {}
 
     override fun onDraw(canvas: Canvas) {
+        // TODO round edge radius calc from rect
         canvas.drawRoundRect(rect, 30f, 30f, paintFill)
         canvas.drawRoundRect(rect, 30f, 30f, paintStroke)
     }

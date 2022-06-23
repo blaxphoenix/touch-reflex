@@ -1,12 +1,12 @@
 package ro.blaxphoenix.touchreflex.draw.circle
 
+import androidx.annotation.IntRange
 import com.google.common.collect.RangeMap
-import ro.blaxphoenix.touchreflex.db.GameMode
 import ro.blaxphoenix.touchreflex.utils.Utils
 
 @Suppress("UnstableApiUsage")
 enum class CircleManagerSettings(
-    val gameMode: GameMode,
+    @IntRange(from = 1) val numberOfCirclesToStartWith: Int,
     val startCircleDuration: Long,
     val minCircleDuration: Long,
     val startCircleInterval: Long,
@@ -15,44 +15,56 @@ enum class CircleManagerSettings(
     val circleIntervalDecelerationMap: RangeMap<Int, Long>
 ) {
     EASY(
-        GameMode.EASY,
-        3500L,
-        2000L,
-        1750L,
-        500L,
+        4,
+        3500,
+        100,
+        1750,
+        100,
         Utils.buildRangeMap(
             listOf(
-                Pair(70, 80),
-                Pair(85, 100),
-                Pair(100, 200)
+                Pair(7, 100),
+                Pair(15, 250),
+                Pair(25, 500),
+                Pair(50, 1000),
+                Pair(75, 5000),
+                Pair(100, 10000)
             )
         ),
         Utils.buildRangeMap(
             listOf(
-                Pair(50, 60),
-                Pair(75, 80),
-                Pair(100, 120)
+                Pair(7, 150),
+                Pair(15, 250),
+                Pair(25, 500),
+                Pair(50, 1250),
+                Pair(75, 7500),
+                Pair(100, 12500)
             )
         )
     ),
     HARD(
-        GameMode.HARD,
-        2500L,
-        1500L,
-        1000L,
-        500L,
+        3,
+        2500,
+        100,
+        1000,
+        100,
         Utils.buildRangeMap(
             listOf(
-                Pair(70, 80),
-                Pair(85, 100),
-                Pair(100, 200)
+                Pair(7, 75),
+                Pair(15, 175),
+                Pair(25, 350),
+                Pair(50, 800),
+                Pair(75, 3000),
+                Pair(100, 8000)
             )
         ),
         Utils.buildRangeMap(
             listOf(
-                Pair(50, 60),
-                Pair(75, 80),
-                Pair(100, 200)
+                Pair(7, 100),
+                Pair(15, 250),
+                Pair(25, 500),
+                Pair(50, 1000),
+                Pair(75, 5000),
+                Pair(100, 10000)
             )
         )
     )

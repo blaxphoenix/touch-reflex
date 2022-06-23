@@ -12,7 +12,8 @@ import ro.blaxphoenix.touchreflex.utils.Utils
 
 abstract class InfoText(
     private val parentView: View,
-    @FloatRange(from = 0.0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble()) textSize: Float,
+    var text: String,
+    @FloatRange(from = .0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble()) textSize: Float,
     @ColorInt color: Int
 ) : CustomDrawable {
 
@@ -30,7 +31,7 @@ abstract class InfoText(
             paint.color = value
         }
 
-    protected val paint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
+    val paint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
 
     init {
         initPaint()
@@ -47,5 +48,12 @@ abstract class InfoText(
     }
 
     open fun onTextSizeChanged(textSize: Float) {}
+
+    fun measureTextLength(customText: String? = null) =
+        if (customText != null) {
+            paint.measureText(customText)
+        } else {
+            paint.measureText(text)
+        }
 
 }

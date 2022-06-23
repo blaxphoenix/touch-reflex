@@ -12,7 +12,8 @@ class SimpleImage(
     private var x: Int,
     private var y: Int,
     private var width: Int,
-    private var height: Int
+    private var height: Int,
+    var isIgnored: Boolean = false
 ) : CustomDrawable {
 
     @ColorInt
@@ -27,20 +28,22 @@ class SimpleImage(
     init {
         DrawableCompat.setTint(wrappedDrawable, color)
         wrappedDrawable.setBounds(x, y, x + width, y + height)
+        // TODO shadow
     }
 
     override fun onStartDrawing() {}
 
-    override fun onDraw(canvas: Canvas) =
-        wrappedDrawable.draw(canvas)
-
+    override fun onDraw(canvas: Canvas) {
+        if (!isIgnored) {
+            wrappedDrawable.draw(canvas)
+        }
+    }
 
     override fun onDisable() {}
 
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean =
         touchX >= x && touchX <= width && touchY >= y && touchY <= height
 
-    @Suppress("unused")
     fun setNewSize(x: Int = this.x, y: Int = this.y, width: Int, height: Int) {
         this.x = x
         this.y = y

@@ -3,6 +3,7 @@ package ro.blaxphoenix.touchreflex.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.view.GestureDetector
@@ -18,10 +19,11 @@ import ro.blaxphoenix.touchreflex.draw.DefaultDrawableManager
 import ro.blaxphoenix.touchreflex.draw.ReflexAnimationCallback
 import ro.blaxphoenix.touchreflex.draw.button.SingleSelectorButton
 import ro.blaxphoenix.touchreflex.draw.button.SingleSelectorButtonDrawableManager
-import ro.blaxphoenix.touchreflex.draw.circle.CircleManagerSettings
 import ro.blaxphoenix.touchreflex.draw.circle.InfiniteCompositeCircleDrawableManager
+import ro.blaxphoenix.touchreflex.draw.image.ImageAndText
 import ro.blaxphoenix.touchreflex.draw.image.SimpleImage
 import ro.blaxphoenix.touchreflex.draw.text.AnimatedInfoText
+import ro.blaxphoenix.touchreflex.draw.text.ScoreTrackerAnimatedInfoText
 import ro.blaxphoenix.touchreflex.draw.text.SimpleInfoText
 import ro.blaxphoenix.touchreflex.utils.AudioService
 import ro.blaxphoenix.touchreflex.utils.GameState
@@ -37,7 +39,39 @@ import kotlin.math.roundToInt
 class ReflexAnimationView(context: Context) : View(context) {
 
     var state: GameState = START
-        private set
+        private set(value) {
+            field = value
+            when (value) {
+                START -> {
+                    val textBounds = Rect()
+                    currentScoreText.paint.getTextBounds(
+                        currentScoreText.text,
+                        0,
+                        currentScoreText.text.length,
+                        textBounds
+                    )
+                    highScoreDrawable?.setNewAttributes(
+                        highScoreDrawable.centerX,
+                        currentScoreText.y!! - (textBounds.height() / 2f),
+                        highScoreDrawable.width.toFloat(),
+                        highScoreDrawable.height.toFloat(),
+                        highScoreDrawable.infoText.textSize
+                    )
+                    inGameNewHighScoreImage?.isIgnored = true
+                }
+                RESTART_DELAY, RESTART -> {
+                    highScoreDrawable?.setNewAttributes(
+                        highScoreDrawable.centerX,
+                        currentScoreText.y!! + currentScoreText.textSize,
+                        highScoreDrawable.width.toFloat(),
+                        highScoreDrawable.height.toFloat(),
+                        highScoreDrawable.infoText.textSize
+                    )
+                    inGameNewHighScoreImage?.isIgnored = true
+                }
+                else -> {}
+            }
+        }
 
     private var gameMode: GameMode = GameMode.EASY
         private set(value) {
@@ -45,8 +79,8 @@ class ReflexAnimationView(context: Context) : View(context) {
             circleManager.settings = value.settings
             demoCircleManager.settings = value.settings
 
-            startHighScoreInfoText.color =
-                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+            highScoreDrawable?.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorPrimary, null)
             startAnimatedText.color =
                 ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
             gameModeButtonEasy.color =
@@ -57,12 +91,12 @@ class ReflexAnimationView(context: Context) : View(context) {
                 ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
             gameModeButtonHard.textColor =
                 ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
-            inGameCurrentScoreText.color =
+            currentScoreText.color =
                 ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
-            restartCurrentScoreInfoText.color =
+            inGameCurrentScoreAnimatedText.color =
                 ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
-            restartHighScoreInfoText.color =
-                ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
+            inGameNewHighScoreImage?.color =
+                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
             restartAnimatedText.color =
                 ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
             backButton?.color =
@@ -70,12 +104,7 @@ class ReflexAnimationView(context: Context) : View(context) {
 
             demoCircleManager.onStop()
             demoCircleManager.init()
-            startHighScoreInfoText.text =
-                context.getString(
-                    R.string.info_high_score,
-                    context.getString(gameMode.nameResourceId),
-                    highScores[gameMode]
-                )
+            highScoreDrawable?.text = highScores[gameMode].toString()
         }
     private val mainHandler = Handler(Looper.getMainLooper())
     private lateinit var highScoreViewModel: HighScoreViewModel
@@ -87,15 +116,9 @@ class ReflexAnimationView(context: Context) : View(context) {
     private val highScoreObserver = Observer<MutableList<HighScoreItem>> { list ->
         list?.let {
             list.forEach { highScores[it.gameMode] = it.score }
-            val item = list.firstOrNull { it.gameMode == gameMode }
-            item?.let {
+            list.firstOrNull { it.gameMode == gameMode }?.let {
                 highScores[it.gameMode] = it.score
-                startHighScoreInfoText.text =
-                    context.getString(
-                        R.string.info_high_score,
-                        context.getString(gameMode.nameResourceId),
-                        it.score
-                    )
+                highScoreDrawable?.text = it.score.toString()
             }
         }
     }
@@ -128,20 +151,28 @@ class ReflexAnimationView(context: Context) : View(context) {
                 circles.forEach { if (it.isDone) circles.remove(it) }
         }
 
-    // start game text
+    // common drawables
+    private val currentScoreText: SimpleInfoText = SimpleInfoText(
+        this,
+        currentTotalScore.toString(),
+        color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+    )
+    private val highScoreDrawable: ImageAndText? =
+        ResourcesCompat.getDrawable(resources, R.drawable.ic_crown_svgrepo_com, null)?.let {
+            ImageAndText(
+                this,
+                it,
+                0f, 0f, 0, 0,
+                highScores[gameMode].toString(),
+                ResourcesCompat.getColor(this.resources, gameMode.colorPrimary, null)
+            )
+        }
+
+    // start game
     private val startAnimatedText: AnimatedInfoText = AnimatedInfoText(
         this,
         resources.getString(R.string.start_game),
         color = ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
-    )
-    private val startHighScoreInfoText: SimpleInfoText = SimpleInfoText(
-        this,
-        context.getString(
-            R.string.info_high_score,
-            context.getString(gameMode.nameResourceId),
-            highScores[gameMode]
-        ),
-        color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
     )
     private val startDescriptionInfoText1: SimpleInfoText = SimpleInfoText(
         this,
@@ -155,37 +186,18 @@ class ReflexAnimationView(context: Context) : View(context) {
         textSize = 60f,
         color = ResourcesCompat.getColor(this.resources, R.color.purple_light_2, null)
     )
-    private val startTextManager: DefaultDrawableManager = DefaultDrawableManager(
+    private val startDrawableManager: DefaultDrawableManager = DefaultDrawableManager(
         arrayListOf(
             startAnimatedText,
-            startHighScoreInfoText,
             startDescriptionInfoText1,
             startDescriptionInfoText2
         )
     )
 
-    // restart game text
+    // restart game
     private val restartAnimatedText: AnimatedInfoText = AnimatedInfoText(
         this,
         resources.getString(R.string.restart_game),
-        color = ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
-    )
-    private val restartCurrentScoreInfoText: SimpleInfoText = SimpleInfoText(
-        this,
-        context.getString(
-            R.string.info_current_score,
-            context.getString(gameMode.nameResourceId),
-            currentTotalScore
-        ),
-        color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
-    )
-    private val restartHighScoreInfoText: SimpleInfoText = SimpleInfoText(
-        this,
-        context.getString(
-            R.string.info_high_score,
-            context.getString(gameMode.nameResourceId),
-            highScores[gameMode]
-        ),
         color = ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null)
     )
     private val restartNewHighScoreInfoText: SimpleInfoText = SimpleInfoText(
@@ -208,26 +220,36 @@ class ReflexAnimationView(context: Context) : View(context) {
         textSize = 100f,
         color = ResourcesCompat.getColor(this.resources, R.color.red, null)
     )
-    private val restartTextManager: DefaultDrawableManager = DefaultDrawableManager(
+    private val restartDrawableManager: DefaultDrawableManager = DefaultDrawableManager(
         arrayListOf(
+            currentScoreText,
             restartAnimatedText,
-            restartCurrentScoreInfoText,
-            restartHighScoreInfoText,
             restartNewHighScoreInfoText,
             restartMotivationInfoText,
             restartGameOverInfoText
         )
     )
 
-    // in game text
-    private val inGameCurrentScoreText: SimpleInfoText = SimpleInfoText(
-        this,
-        currentTotalScore.toString(),
-        color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
-    )
-    private val inGameTextManager: DefaultDrawableManager = DefaultDrawableManager(
+    // in game
+    private val inGameCurrentScoreAnimatedText: ScoreTrackerAnimatedInfoText =
+        ScoreTrackerAnimatedInfoText(
+            this,
+            currentTotalScore.toString(),
+            color = ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
+        )
+    private val inGameNewHighScoreImage: SimpleImage? =
+        ResourcesCompat.getDrawable(resources, R.drawable.ic_crown_svgrepo_com, null)?.let {
+            SimpleImage(
+                it,
+                ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null),
+                0, 0, 200, 200,
+                true
+            )
+        }
+    private val inGameDrawableManager: DefaultDrawableManager = DefaultDrawableManager(
         arrayListOf(
-            inGameCurrentScoreText
+            currentScoreText,
+            inGameCurrentScoreAnimatedText
         )
     )
 
@@ -236,8 +258,8 @@ class ReflexAnimationView(context: Context) : View(context) {
         this,
         0f,
         0f,
-        225f,
         450f,
+        225f,
         context.getString(R.string.game_mode_easy).uppercase(),
         ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null),
         ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null),
@@ -247,8 +269,8 @@ class ReflexAnimationView(context: Context) : View(context) {
         this,
         0f,
         0f,
-        225f,
         450f,
+        225f,
         context.getString(R.string.game_mode_hard).uppercase(),
         ResourcesCompat.getColor(this.resources, gameMode.colorAccent, null),
         ResourcesCompat.getColor(this.resources, gameMode.colorSecondary, null)
@@ -270,6 +292,15 @@ class ReflexAnimationView(context: Context) : View(context) {
             )
         }
 
+    init {
+        highScoreDrawable?.let {
+            startDrawableManager.add(it)
+            restartDrawableManager.add(it)
+        }
+        backButton?.let { restartDrawableManager.add(it) }
+        inGameNewHighScoreImage?.let { inGameDrawableManager.add(it) }
+    }
+
     fun setUpView(
         highScoreViewModel: HighScoreViewModel,
         audioService: AudioService
@@ -282,7 +313,6 @@ class ReflexAnimationView(context: Context) : View(context) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         highScoreViewModel.allHighScoreItems.observeForever(highScoreObserver)
-        startTextManager.init()
     }
 
     override fun onDetachedFromWindow() {
@@ -292,52 +322,80 @@ class ReflexAnimationView(context: Context) : View(context) {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         setDrawableAttributes()
-        startTextManager.init()
+        startDrawableManager.init()
         demoCircleManager.onStop()
         demoCircleManager.init()
     }
 
     private fun setDrawableAttributes() {
-        demoCircleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width, 1f)
-        circleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width, 1f)
+        demoCircleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width)
+        circleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width)
         startAnimatedText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        startHighScoreInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
         startDescriptionInfoText1.textSize = Utils.getSize(Utils.MAX_SMALL_TEXT_SIZE, width)
         startDescriptionInfoText2.textSize = Utils.getSize(Utils.MAX_SMALL_TEXT_SIZE, width)
         restartAnimatedText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        restartCurrentScoreInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        restartHighScoreInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        restartNewHighScoreInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        restartMotivationInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
+        restartNewHighScoreInfoText.textSize =
+            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
+        restartMotivationInfoText.textSize =
+            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
         restartGameOverInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        inGameCurrentScoreText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
+        currentScoreText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
+        inGameCurrentScoreAnimatedText.textSize =
+            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
+        // TODO move in one place (same as in setter of state?)
+        var highScoreDrawableY = 0f
+        when (state) {
+            START -> {
+                val textBounds = Rect()
+                currentScoreText.paint.getTextBounds(
+                    currentScoreText.text,
+                    0,
+                    currentScoreText.text.length,
+                    textBounds
+                )
+                highScoreDrawableY = currentScoreText.y!! - (textBounds.height() / 2f)
+            }
+            RESTART, RESTART_DELAY -> {
+                highScoreDrawableY = currentScoreText.y!! + currentScoreText.textSize
+            }
+            else -> {}
+        }
+        highScoreDrawable?.setNewAttributes(
+            width / 2f,
+            highScoreDrawableY,
+            Utils.getSize(Utils.MAX_IMAGE_SIZE, width),
+            Utils.getSize(Utils.MAX_IMAGE_SIZE, width),
+            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width),
+        )
         gameModeButtonEasy.setNewAttributes(
-            width * 0.3f,
+            width * .3f,
             height / 1.25f,
-            Utils.getSize(Utils.MAX_BUTTON_HEIGHT, width),
             Utils.getSize(Utils.MAX_BUTTON_WIDTH, width),
+            Utils.getSize(Utils.MAX_BUTTON_HEIGHT, width),
             Utils.getSize(Utils.MAX_BUTTON_TEXT_SIZE, width)
         )
         gameModeButtonHard.setNewAttributes(
-            width * 0.7f,
+            width * .7f,
             height / 1.25f,
-            Utils.getSize(Utils.MAX_BUTTON_HEIGHT, width),
             Utils.getSize(Utils.MAX_BUTTON_WIDTH, width),
+            Utils.getSize(Utils.MAX_BUTTON_HEIGHT, width),
             Utils.getSize(Utils.MAX_BUTTON_TEXT_SIZE, width)
         )
-        // TODO use the same width height order in the whole project
         backButton?.setNewSize(
             width = Utils.getSize(Utils.MAX_IMAGE_SIZE * 2, width).roundToInt(),
             height = Utils.getSize(Utils.MAX_IMAGE_SIZE * 2, width).roundToInt()
         )
-
+        inGameNewHighScoreImage?.setNewSize(
+            Utils.getSize(Utils.MAX_IMAGE_SIZE / 2, width).roundToInt(),
+            Utils.getSize(Utils.MAX_IMAGE_SIZE / 2, width).roundToInt(),
+            Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt(),
+            Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt()
+        )
         val xPos = width / 2f
         var yPos = height - (height / 10f)
         startDescriptionInfoText1.setNewCoordinates(xPos, yPos)
         yPos += startDescriptionInfoText1.textSize * 1.25f
         startDescriptionInfoText2.setNewCoordinates(xPos, yPos)
-        yPos = startHighScoreInfoText.y!! + startHighScoreInfoText.textSize * 1.25f
-        restartHighScoreInfoText.setNewCoordinates(xPos, yPos)
         yPos = height / 1.25f
         restartGameOverInfoText.setNewCoordinates(xPos, yPos)
         yPos += restartGameOverInfoText.textSize * 1.35f
@@ -351,8 +409,8 @@ class ReflexAnimationView(context: Context) : View(context) {
             .switchMusic(gameMode.musicType)
         state = GAME
         currentTotalScore = 0
-        inGameCurrentScoreText.text = currentTotalScore.toString()
-        restartHighScoreInfoText.isIgnored = true
+        currentScoreText.text = currentTotalScore.toString()
+        inGameCurrentScoreAnimatedText.text = currentTotalScore.toString()
         demoCircleManager.onStop()
         circleManager.onStop()
         circleManager.init()
@@ -361,7 +419,12 @@ class ReflexAnimationView(context: Context) : View(context) {
     private fun scored() {
         audioService.playTouchSound()
         currentTotalScore++
-        inGameCurrentScoreText.text = currentTotalScore.toString()
+        currentScoreText.text = currentTotalScore.toString()
+        inGameCurrentScoreAnimatedText.text = currentTotalScore.toString()
+        inGameCurrentScoreAnimatedText.onStartDrawing()
+        if (currentTotalScore > highScores[gameMode]!!) {
+            inGameNewHighScoreImage?.isIgnored = false
+        }
     }
 
     private fun gameOver() {
@@ -370,7 +433,7 @@ class ReflexAnimationView(context: Context) : View(context) {
         }, 750L)
 
         state = RESTART_DELAY
-        restartTextManager.init()
+        restartDrawableManager.init()
         audioService.switchMusic(MusicType.MENU)
 
         if (currentTotalScore > highScores[gameMode]!!) {
@@ -384,36 +447,23 @@ class ReflexAnimationView(context: Context) : View(context) {
             restartNewHighScoreInfoText.isIgnored = true
             restartMotivationInfoText.isIgnored = false
         }
-        restartHighScoreInfoText.isIgnored = false
-        restartHighScoreInfoText.text =
-            context.getString(
-                R.string.info_high_score,
-                context.getString(gameMode.nameResourceId),
-                highScores[gameMode]
-            )
-        restartCurrentScoreInfoText.text =
-            context.getString(
-                R.string.info_current_score,
-                context.getString(gameMode.nameResourceId),
-                currentTotalScore
-            )
     }
 
     override fun onDraw(canvas: Canvas) {
         when (state) {
             START -> {
                 demoCircleManager.onDraw(canvas)
-                startTextManager.onDraw(canvas)
+                startDrawableManager.onDraw(canvas)
                 gameModeButtonManager.onDraw(canvas)
             }
             GAME -> {
                 circleManager.onDraw(canvas)
-                inGameTextManager.onDraw(canvas)
+                inGameDrawableManager.onDraw(canvas)
             }
             RESTART, RESTART_DELAY -> {
                 circleManager.onDraw(canvas)
-                restartTextManager.onDraw(canvas)
-                backButton?.onDraw(canvas)
+                restartDrawableManager.onDraw(canvas)
+                //backButton?.onDraw(canvas)
             }
         }
     }
@@ -454,8 +504,8 @@ class ReflexAnimationView(context: Context) : View(context) {
                     val touchX = e.x
                     val touchY = e.y
                     // TODO implement properly with animatedText.isInBoundary()
-                    if (touchY > centerY - viewCallback.startAnimatedText.textSize * 1.5f
-                        && touchY < centerY + viewCallback.startAnimatedText.textSize * 1.5f
+                    if (touchY > centerY - viewCallback.startAnimatedText.textSize * 3f
+                        && touchY < viewCallback.gameModeButtonEasy.centerY - viewCallback.gameModeButtonEasy.rect.height()
                     ) {
                         viewCallback.initGame()
                     }
@@ -464,12 +514,18 @@ class ReflexAnimationView(context: Context) : View(context) {
                             viewCallback.gameModeButtonEasy.onTouch(touchX, touchY)
                             viewCallback.gameModeButtonHard.onTouch(touchX, touchY)
                             viewCallback.gameMode = GameMode.EASY
+                            viewCallback.audioService.playConfirmSound()
                         }
-                    } else if (viewCallback.gameModeButtonHard.isInBoundary(touchX, touchY)) {
+                    } else if (viewCallback.gameModeButtonHard.isInBoundary(
+                            touchX,
+                            touchY
+                        )
+                    ) {
                         if (!viewCallback.gameModeButtonHard.isSelected) {
                             viewCallback.gameModeButtonHard.onTouch(touchX, touchY)
                             viewCallback.gameModeButtonEasy.onTouch(touchX, touchY)
                             viewCallback.gameMode = GameMode.HARD
+                            viewCallback.audioService.playConfirmSound()
                         }
                     }
                 }
@@ -487,6 +543,10 @@ class ReflexAnimationView(context: Context) : View(context) {
                     // TODO make it also work on START screen to exit app?
                     if (viewCallback.backButton?.isInBoundary(touchX, touchY) == true) {
                         viewCallback.state = START
+                        viewCallback.audioService.playConfirmSound()
+                        // TODO better solution?
+                        viewCallback.demoCircleManager.onStop()
+                        viewCallback.demoCircleManager.init()
                     }
                 }
                 else -> {
@@ -495,25 +555,6 @@ class ReflexAnimationView(context: Context) : View(context) {
             return true
         }
 
-        override fun onLongPress(e: MotionEvent?) {
-            when (viewCallback.state) {
-                START -> {
-                    viewCallback.circleManager.settings =
-                        if (viewCallback.circleManager.settings == CircleManagerSettings.EASY) {
-                            CircleManagerSettings.HARD
-                        } else {
-                            CircleManagerSettings.EASY
-                        }
-                    viewCallback.initGame()
-                }
-                RESTART -> {
-                    viewCallback.initGame()
-                }
-                else -> {
-                    // nothing
-                }
-            }
-        }
     }
 
 }
