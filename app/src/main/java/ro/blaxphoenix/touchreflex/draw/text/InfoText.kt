@@ -44,6 +44,7 @@ abstract class InfoText(
         paint.textAlign = Paint.Align.CENTER
         paint.textSize = textSize
         paint.typeface = FontCache.get(R.font.kdamthmorproregular, parentView.context)
+        // TODO common method in Utils
         paint.setShadowLayer(5.5f, 6.0f, 6.0f, parentView.resources.getColor(R.color.grey, null))
     }
 

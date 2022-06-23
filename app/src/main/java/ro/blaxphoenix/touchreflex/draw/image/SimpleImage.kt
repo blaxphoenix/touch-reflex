@@ -7,12 +7,13 @@ import androidx.core.graphics.drawable.DrawableCompat
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
 
 class SimpleImage(
+    // TODO check all fields which need public/private gets/sets
     drawable: Drawable,
     @ColorInt color: Int,
     private var x: Int,
     private var y: Int,
-    private var width: Int,
-    private var height: Int,
+    var width: Int,
+    var height: Int,
     var isIgnored: Boolean = false
 ) : CustomDrawable {
 
@@ -44,7 +45,12 @@ class SimpleImage(
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean =
         touchX >= x && touchX <= width && touchY >= y && touchY <= height
 
-    fun setNewSize(x: Int = this.x, y: Int = this.y, width: Int, height: Int) {
+    fun setNewSize(
+        x: Int = this.x,
+        y: Int = this.y,
+        width: Int = this.width,
+        height: Int = this.height
+    ) {
         this.x = x
         this.y = y
         this.width = width

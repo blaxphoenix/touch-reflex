@@ -17,7 +17,7 @@ import ro.blaxphoenix.touchreflex.utils.Utils
 import kotlin.math.max
 
 class CompositeCircle(
-    private val circleManager: CustomDrawableManager,
+    private val circleManager: InfiniteCompositeCircleDrawableManager,
     private val parentView: View,
     val xCenter: Float,
     val yCenter: Float,
@@ -124,7 +124,7 @@ class CompositeCircle(
                     isInverted = true
                 } else {
                     if (!isDisabled) {
-                        circleManager.onPause()
+                        circleManager.onGameOver(xCenter, yCenter)
                         isDone = true
                     }
                 }
