@@ -133,31 +133,31 @@ open class InfiniteCompositeCircleDrawableManager(
             val percentage: Float = settings.minCircleDuration / circleDuration.toFloat() * 100
             val modifier: Long? =
                 settings.circleDurationDecelerationMap[percentage.toInt()]
-            println("#### durationPercentage: $percentage")
-            println("#### circleDurationModifier: $modifier")
+            //println("#### durationPercentage: $percentage")
+            //println("#### circleDurationModifier: $modifier")
             val updatedCircleDuration = circleDuration - (circleDuration / modifier!!)
             circleDuration = if (updatedCircleDuration >= settings.minCircleDuration) {
                 updatedCircleDuration
             } else {
                 settings.minCircleDuration
             }
-            println("#### circleDuration: $circleDuration")
+            //println("#### circleDuration: $circleDuration")
         }
         if (circleInterval > settings.minCircleInterval) {
             val percentage: Float = settings.minCircleInterval / circleInterval.toFloat() * 100
             val modifier: Long? =
                 settings.circleIntervalDecelerationMap[percentage.toInt()]
-            println("#### intervalPercentage: $percentage")
-            println("#### circleIntervalModifier: $modifier")
+            //println("#### intervalPercentage: $percentage")
+            //println("#### circleIntervalModifier: $modifier")
             val updatedCircleInterval = circleInterval - (circleInterval / modifier!!)
             circleInterval = if (updatedCircleInterval >= settings.minCircleInterval) {
                 updatedCircleInterval
             } else {
                 settings.minCircleInterval
             }
-            println("#### circleInterval: $circleInterval")
+            //println("#### circleInterval: $circleInterval")
         }
-        println("---------")
+        //println("---------")
     }
 
     override fun onDraw(canvas: Canvas) = circles.forEach { it.onDraw(canvas) }

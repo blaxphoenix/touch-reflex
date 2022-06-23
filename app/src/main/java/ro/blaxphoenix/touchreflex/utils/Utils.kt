@@ -16,7 +16,7 @@ class Utils {
         const val MAX_NUMBER_OF_CIRCLES_AT_ONCE: Int = 12
 
         @Suppress("MemberVisibilityCanBePrivate")
-        const val DEFAULT_SCREEN_WIDTH: Int = 1080
+        const val DEFAULT_SCREEN_WIDTH: Int = 1440
 
         const val MAX_CIRCLE_RADIUS: Float = 120f
         const val MAX_SMALL_TEXT_SIZE: Float = 60f
@@ -27,7 +27,7 @@ class Utils {
         const val MAX_IMAGE_SIZE: Float = 100f
 
         // TODO better solution, reCalculate() and then cache values (enum map?)
-        fun getSize(maxSize: Float, width: Int, modifier: Float = .88f): Float =
+        fun getSize(maxSize: Float, width: Int, modifier: Float = 1f): Float =
             if (width >= DEFAULT_SCREEN_WIDTH) {
                 maxSize
             } else {
