@@ -348,6 +348,10 @@ class ReflexAnimationView(context: Context) : View(context) {
             Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt(),
             Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt()
         )
+        restartDisappearedCircleMarkerImage?.setNewSize(
+            width = Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt(),
+            height = Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt()
+        )
         val xPos = width / 2f
         var yPos = height - (height / 10f)
         startDescriptionInfoText1.setNewCoordinates(xPos, yPos)
@@ -542,8 +546,9 @@ class ReflexAnimationView(context: Context) : View(context) {
                     val touchX = e.x
                     val touchY = e.y
                     // TODO implement properly with animatedText.isInBoundary()
-                    if (touchY > centerY - viewCallback.startAnimatedText.textSize * 1.5f
-                        && touchY < centerY + viewCallback.startAnimatedText.textSize * 1.5f
+                    // TODO move to common?
+                    if (touchY > centerY - viewCallback.startAnimatedText.textSize * 3f
+                        && touchY < viewCallback.gameModeButtonEasy.centerY - viewCallback.gameModeButtonEasy.rect.height()
                     ) {
                         viewCallback.initGame()
                     }
@@ -551,7 +556,7 @@ class ReflexAnimationView(context: Context) : View(context) {
                     if (viewCallback.backButton?.isInBoundary(touchX, touchY) == true) {
                         viewCallback.state = START
                         viewCallback.audioService.playConfirmSound()
-                        // TODO better solution?
+                        // TODO better solution? new restart method in circleManager or manager
                         viewCallback.demoCircleManager.onStop()
                         viewCallback.demoCircleManager.init()
                     }
