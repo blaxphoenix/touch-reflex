@@ -42,7 +42,7 @@ enum class CircleManagerSettings(
         )
     ),
     HARD(
-        3,
+        4,
         2500,
         100,
         1000,

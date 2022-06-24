@@ -22,5 +22,11 @@ class DefaultDrawableManager(
 
     override fun onStop() {}
 
-    fun add(drawable: CustomDrawable) = elements.add(drawable)
+    fun add(drawable: CustomDrawable, index: Int? = null) {
+        if (index != null) {
+            elements.add(index, drawable)
+        } else {
+            elements.add(drawable)
+        }
+    }
 }

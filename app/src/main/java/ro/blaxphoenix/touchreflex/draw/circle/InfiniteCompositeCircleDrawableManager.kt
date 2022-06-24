@@ -184,7 +184,6 @@ open class InfiniteCompositeCircleDrawableManager(
     override fun onPause() {
         pauseCircles()
         mainHandler.removeCallbacksAndMessages(null)
-        callback?.onGameOver()
     }
 
     override fun onStop() {
@@ -192,6 +191,11 @@ open class InfiniteCompositeCircleDrawableManager(
         circles.clear()
         circlesNotDrawn.clear()
         mainHandler.removeCallbacksAndMessages(null)
+    }
+
+    fun onGameOver(xCenter: Float, yCenter: Float) {
+        onPause()
+        callback?.onGameOver(xCenter, yCenter)
     }
 
     private fun pauseCircles() {
