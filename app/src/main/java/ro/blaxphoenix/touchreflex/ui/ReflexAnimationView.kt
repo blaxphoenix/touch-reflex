@@ -402,19 +402,18 @@ class ReflexAnimationView(context: Context) : View(context) {
 
         state = RESTART_DELAY
         restartDrawableManager.init()
+        audioService.playGameOverSound()
         audioService.switchMusic(MusicType.MENU)
         Utils.vibrate(context)
 
         if (currentTotalScore > highScores[gameMode]!!) {
             highScoreDrawable?.text = currentTotalScore.toString()
-            audioService.playHighScoreSound()
             highScores[gameMode] = currentTotalScore
             highScoreViewModel.insert(HighScoreItem(gameMode, currentTotalScore))
             restartNewHighScoreInfoText.isIgnored = false
             restartMotivationInfoText.isIgnored = true
         } else {
             currentScoreText.isIgnored = false
-            audioService.playGameOverSound()
             restartNewHighScoreInfoText.isIgnored = true
             restartMotivationInfoText.isIgnored = false
         }
