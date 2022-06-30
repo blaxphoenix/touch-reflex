@@ -11,7 +11,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
-import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
+import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache
 import ro.blaxphoenix.touchreflex.utils.ReverseInterpolator
 import ro.blaxphoenix.touchreflex.utils.Utils
 import kotlin.math.max
@@ -21,10 +21,8 @@ class CompositeCircle(
     private val parentView: View,
     val xCenter: Float,
     val yCenter: Float,
-    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
-    private var radius: Float = Utils.MAX_CIRCLE_RADIUS,
-    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
-    animatorValue: Float,
+    private var radius: Float = ComponentSizeCache.SizeType.MAX_CIRCLE_RADIUS.size,
+    defaultRadius: Float,
     private val duration: Long,
     @FloatRange(from = .0, to = 360.0)
     private val hue: Float,
@@ -32,12 +30,48 @@ class CompositeCircle(
     private val alpha: Int = 0xFF
 ) : CustomDrawable {
 
-    // TODO find a better solution (initialRadius?)
-    var animatorValue: Float = animatorValue
+    var defaultRadius: Float = defaultRadius
         set(value) {
             field = value
             animator?.setFloatValues(0f, value)
         }
+
+    private val updateListener = ValueAnimator.AnimatorUpdateListener {
+        val value = it.animatedValue as Float
+        radius = value
+        val percentageSubunit = it.animatedValue as Float / defaultRadius
+        setColors(
+            (1 - baseSaturation) * percentageSubunit,
+            (1 - baseLuminosity) * percentageSubunit
+        )
+        parentView.invalidate()
+    }
+    private val updateListenerInverted = ValueAnimator.AnimatorUpdateListener {
+        val value = it.animatedValue as Float
+        radius = value
+        val percentageSubunit = it.animatedValue as Float / defaultRadius
+        setColors(
+            customSaturation = percentageSubunit,
+            customLuminosity = 1f
+        )
+        parentView.invalidate()
+    }
+    private val onAnimationEndListener = object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator?) {
+            isInverted = true
+            initAnimator(Utils.nextLongWithMargin(duration) * 3)
+            animator?.start()
+        }
+    }
+    private val onAnimationEndListenerInverted = object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator?) {
+            if (!isDisabled) {
+                circleManager.onGameOver(xCenter, yCenter)
+                isDone = true
+            }
+        }
+    }
+
     private val strokeAlpha = alpha / 2
     private val baseSaturation: Float = .5f
     private val baseLuminosity: Float = .5f
@@ -90,46 +124,18 @@ class CompositeCircle(
             )
     }
 
-    private fun initAnimator() {
-        animator = ValueAnimator.ofFloat(0f, animatorValue)
+    private fun initAnimator(duration: Long = this.duration) {
+        animator = ValueAnimator.ofFloat(0f, defaultRadius)
         animator?.duration = Utils.nextLongWithMargin(duration)
-        animator?.interpolator = AccelerateDecelerateInterpolator()
-        // TODO 2 update listeners (isInverted)
-        // TODO isInverted = reduce saturation to make the circles go white before disappearing
-        animator?.addUpdateListener {
-            val value = it.animatedValue as Float
-            radius = value
-            val percentageSubunit = it.animatedValue as Float / animatorValue
-            if (!isInverted) {
-                setColors(
-                    (1 - baseSaturation) * percentageSubunit,
-                    (1 - baseLuminosity) * percentageSubunit
-                )
-            } else {
-                setColors(
-                    customSaturation = percentageSubunit,
-                    customLuminosity = 1f
-                )
-            }
-            parentView.invalidate()
+        if (!isInverted) {
+            animator?.interpolator = AccelerateDecelerateInterpolator()
+            animator?.addUpdateListener(updateListener)
+            animator?.addListener(onAnimationEndListener)
+        } else {
+            animator?.interpolator = ReverseInterpolator(AccelerateDecelerateInterpolator())
+            animator?.addUpdateListener(updateListenerInverted)
+            animator?.addListener(onAnimationEndListenerInverted)
         }
-        // TODO 2 onAnimationEnd listeners (isInverted)
-        animator?.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                if (!isInverted) {
-                    animation?.interpolator =
-                        ReverseInterpolator(AccelerateDecelerateInterpolator())
-                    animation?.duration = (Utils.nextLongWithMargin(duration) * 3)
-                    animation?.start()
-                    isInverted = true
-                } else {
-                    if (!isDisabled) {
-                        circleManager.onGameOver(xCenter, yCenter)
-                        isDone = true
-                    }
-                }
-            }
-        })
     }
 
     override fun onStartDrawing() {
@@ -160,7 +166,7 @@ class CompositeCircle(
             xCenter,
             yCenter,
             // have a minimum radius considered for easier clicking when circle is too small
-            max(radius, animatorValue / 3)
+            max(radius, defaultRadius / 3)
         )
 
 }

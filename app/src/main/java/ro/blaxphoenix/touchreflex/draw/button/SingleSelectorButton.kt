@@ -14,8 +14,8 @@ class SingleSelectorButton(
     parentView: View,
     var centerX: Float,
     var centerY: Float,
-    @FloatRange(from = .0, to = Utils.MAX_BUTTON_WIDTH.toDouble()) private var width: Float,
-    @FloatRange(from = .0, to = Utils.MAX_BUTTON_HEIGHT.toDouble()) private var height: Float,
+    private var width: Float,
+    private var height: Float,
     text: String,
     @ColorInt color: Int,
     @ColorInt textColor: Int,
@@ -107,6 +107,7 @@ class SingleSelectorButton(
             centerY + height / 2
         )
         backgroundRectangle.rect = rect
+        backgroundRectangle.resetShadowLayer()
         infoText.textSize = newTextSize
         infoText.setNewCoordinates(centerX, centerY + newTextSize * .4f)
     }

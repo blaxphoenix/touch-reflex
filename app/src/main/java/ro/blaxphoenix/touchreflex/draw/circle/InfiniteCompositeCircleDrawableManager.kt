@@ -8,6 +8,7 @@ import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
 import ro.blaxphoenix.touchreflex.draw.ReflexAnimationCallback
+import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache
 import ro.blaxphoenix.touchreflex.utils.Utils
 import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.math.roundToLong
@@ -25,8 +26,7 @@ open class InfiniteCompositeCircleDrawableManager(
     private var circleDuration: Long = settings.startCircleDuration
     private var circleInterval: Long = settings.startCircleInterval
 
-    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
-    var radius: Float = Utils.MAX_CIRCLE_RADIUS
+    var radius: Float = ComponentSizeCache.SizeType.MAX_CIRCLE_RADIUS.size
 
     @FloatRange(from = .0, to = 360.0)
     private var hue: Float = 0f
@@ -77,7 +77,7 @@ open class InfiniteCompositeCircleDrawableManager(
             x,
             y,
             radius,
-            animatorValue = radius,
+            defaultRadius = radius,
             circleDuration,
             hue,
             alpha
@@ -100,7 +100,7 @@ open class InfiniteCompositeCircleDrawableManager(
                 it.xCenter,
                 it.yCenter
                 // TODO is this good enough?
-            ) <= it.animatorValue * 4
+            ) <= it.defaultRadius * 4
         } != null
 
     private fun postDelayed(
@@ -129,6 +129,7 @@ open class InfiniteCompositeCircleDrawableManager(
 
     protected open fun updateTimers() {
         // TODO remove all debugger println(s)
+        // TODO configurable logger?
         if (circleDuration > settings.minCircleDuration) {
             val percentage: Float = settings.minCircleDuration / circleDuration.toFloat() * 100
             val modifier: Long? =

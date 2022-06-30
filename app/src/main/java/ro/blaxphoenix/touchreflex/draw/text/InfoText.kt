@@ -4,7 +4,6 @@ import android.graphics.Paint
 import android.text.TextPaint
 import android.view.View
 import androidx.annotation.ColorInt
-import androidx.annotation.FloatRange
 import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
 import ro.blaxphoenix.touchreflex.utils.FontCache
@@ -13,7 +12,7 @@ import ro.blaxphoenix.touchreflex.utils.Utils
 abstract class InfoText(
     private val parentView: View,
     var text: String,
-    @FloatRange(from = .0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble()) textSize: Float,
+    textSize: Float,
     @ColorInt color: Int
 ) : CustomDrawable {
 
@@ -22,6 +21,7 @@ abstract class InfoText(
             field = value
             paint.textSize = textSize
             onTextSizeChanged(textSize)
+            resetShadowLayer()
         }
 
     @ColorInt
@@ -44,8 +44,7 @@ abstract class InfoText(
         paint.textAlign = Paint.Align.CENTER
         paint.textSize = textSize
         paint.typeface = FontCache.get(R.font.kdamthmorproregular, parentView.context)
-        // TODO common method in Utils
-        paint.setShadowLayer(5.5f, 6.0f, 6.0f, parentView.resources.getColor(R.color.grey, null))
+        resetShadowLayer()
     }
 
     open fun onTextSizeChanged(textSize: Float) {}
@@ -56,5 +55,7 @@ abstract class InfoText(
         } else {
             paint.measureText(text)
         }
+
+    private fun resetShadowLayer() = Utils.setPaintShadowLayer(paint, parentView)
 
 }

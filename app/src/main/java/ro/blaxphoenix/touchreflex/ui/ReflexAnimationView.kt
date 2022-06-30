@@ -25,11 +25,9 @@ import ro.blaxphoenix.touchreflex.draw.image.SimpleImage
 import ro.blaxphoenix.touchreflex.draw.text.AnimatedInfoText
 import ro.blaxphoenix.touchreflex.draw.text.ScoreTrackerAnimatedInfoText
 import ro.blaxphoenix.touchreflex.draw.text.SimpleInfoText
-import ro.blaxphoenix.touchreflex.utils.AudioService
-import ro.blaxphoenix.touchreflex.utils.GameState
+import ro.blaxphoenix.touchreflex.utils.*
+import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache.SizeType.*
 import ro.blaxphoenix.touchreflex.utils.GameState.*
-import ro.blaxphoenix.touchreflex.utils.MusicType
-import ro.blaxphoenix.touchreflex.utils.Utils
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -309,48 +307,46 @@ class ReflexAnimationView(context: Context) : View(context) {
     }
 
     private fun setDrawableAttributes() {
-        demoCircleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width)
-        circleManager.radius = Utils.getSize(Utils.MAX_CIRCLE_RADIUS, width)
-        startAnimatedText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        startDescriptionInfoText1.textSize = Utils.getSize(Utils.MAX_SMALL_TEXT_SIZE, width)
-        startDescriptionInfoText2.textSize = Utils.getSize(Utils.MAX_SMALL_TEXT_SIZE, width)
-        restartAnimatedText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        restartNewHighScoreInfoText.textSize =
-            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        restartMotivationInfoText.textSize =
-            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        restartGameOverInfoText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        currentScoreText.textSize = Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
-        inGameCurrentScoreAnimatedText.textSize =
-            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width)
+        ComponentSizeCache.update(width)
+        demoCircleManager.radius = ComponentSizeCache.getSize(MAX_CIRCLE_RADIUS)
+        circleManager.radius = ComponentSizeCache.getSize(MAX_CIRCLE_RADIUS)
+        startAnimatedText.textSize = ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE)
+        startDescriptionInfoText1.textSize = ComponentSizeCache.getSize(MAX_SMALL_TEXT_SIZE)
+        startDescriptionInfoText2.textSize = ComponentSizeCache.getSize(MAX_SMALL_TEXT_SIZE)
+        restartAnimatedText.textSize = ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE)
+        restartNewHighScoreInfoText.textSize = ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE)
+        restartMotivationInfoText.textSize = ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE)
+        restartGameOverInfoText.textSize = ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE)
+        currentScoreText.textSize = ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE)
+        inGameCurrentScoreAnimatedText.textSize = ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE)
         setHighScoreDrawableAttributes()
         gameModeButtonEasy.setNewAttributes(
             width * .3f,
             height / 1.25f,
-            Utils.getSize(Utils.MAX_BUTTON_WIDTH, width),
-            Utils.getSize(Utils.MAX_BUTTON_HEIGHT, width),
-            Utils.getSize(Utils.MAX_BUTTON_TEXT_SIZE, width)
+            ComponentSizeCache.getSize(MAX_BUTTON_WIDTH),
+            ComponentSizeCache.getSize(MAX_BUTTON_HEIGHT),
+            ComponentSizeCache.getSize(MAX_BUTTON_TEXT_SIZE)
         )
         gameModeButtonHard.setNewAttributes(
             width * .7f,
             height / 1.25f,
-            Utils.getSize(Utils.MAX_BUTTON_WIDTH, width),
-            Utils.getSize(Utils.MAX_BUTTON_HEIGHT, width),
-            Utils.getSize(Utils.MAX_BUTTON_TEXT_SIZE, width)
+            ComponentSizeCache.getSize(MAX_BUTTON_WIDTH),
+            ComponentSizeCache.getSize(MAX_BUTTON_HEIGHT),
+            ComponentSizeCache.getSize(MAX_BUTTON_TEXT_SIZE)
         )
         backButton?.setNewSize(
-            width = Utils.getSize(Utils.MAX_IMAGE_SIZE * 2, width).roundToInt(),
-            height = Utils.getSize(Utils.MAX_IMAGE_SIZE * 2, width).roundToInt()
+            width = (ComponentSizeCache.getSize(MAX_IMAGE_SIZE) * 2).roundToInt(),
+            height = (ComponentSizeCache.getSize(MAX_IMAGE_SIZE) * 2).roundToInt()
         )
         inGameNewHighScoreImage?.setNewSize(
-            Utils.getSize(Utils.MAX_IMAGE_SIZE / 2, width).roundToInt(),
-            Utils.getSize(Utils.MAX_IMAGE_SIZE / 2, width).roundToInt(),
-            Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt(),
-            Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt()
+            (ComponentSizeCache.getSize(MAX_IMAGE_SIZE) / 2).roundToInt(),
+            (ComponentSizeCache.getSize(MAX_IMAGE_SIZE) / 2).roundToInt(),
+            ComponentSizeCache.getSize(MAX_IMAGE_SIZE).roundToInt(),
+            ComponentSizeCache.getSize(MAX_IMAGE_SIZE).roundToInt()
         )
         restartDisappearedCircleMarkerImage?.setNewSize(
-            width = Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt(),
-            height = Utils.getSize(Utils.MAX_IMAGE_SIZE, width).roundToInt()
+            width = ComponentSizeCache.getSize(MAX_IMAGE_SIZE).roundToInt(),
+            height = ComponentSizeCache.getSize(MAX_IMAGE_SIZE).roundToInt()
         )
         val xPos = width / 2f
         var yPos = height - (height / 10f)
@@ -480,9 +476,9 @@ class ReflexAnimationView(context: Context) : View(context) {
         highScoreDrawable?.setNewAttributes(
             width / 2f,
             highScoreDrawableY,
-            Utils.getSize(Utils.MAX_IMAGE_SIZE, width),
-            Utils.getSize(Utils.MAX_IMAGE_SIZE, width),
-            Utils.getSize(Utils.MAX_DEFAULT_TEXT_SIZE, width),
+            ComponentSizeCache.getSize(MAX_IMAGE_SIZE),
+            ComponentSizeCache.getSize(MAX_IMAGE_SIZE),
+            ComponentSizeCache.getSize(MAX_DEFAULT_TEXT_SIZE),
         )
     }
 

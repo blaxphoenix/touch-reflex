@@ -1,14 +1,17 @@
 package ro.blaxphoenix.touchreflex.utils
 
 import android.content.Context
+import android.graphics.Paint
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.view.View
 import androidx.annotation.IntRange
 import com.google.common.collect.Range
 import com.google.common.collect.RangeMap
 import com.google.common.collect.TreeRangeMap
+import ro.blaxphoenix.touchreflex.R
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToLong
@@ -19,25 +22,7 @@ class Utils {
     companion object {
         @IntRange(from = 1, to = 15)
         const val MAX_NUMBER_OF_CIRCLES_AT_ONCE: Int = 12
-
-        @Suppress("MemberVisibilityCanBePrivate")
         const val DEFAULT_SCREEN_WIDTH: Int = 1440
-
-        const val MAX_CIRCLE_RADIUS: Float = 120f
-        const val MAX_SMALL_TEXT_SIZE: Float = 60f
-        const val MAX_DEFAULT_TEXT_SIZE: Float = 100f
-        const val MAX_BUTTON_TEXT_SIZE: Float = MAX_DEFAULT_TEXT_SIZE
-        const val MAX_BUTTON_WIDTH: Float = 450f
-        const val MAX_BUTTON_HEIGHT: Float = MAX_BUTTON_WIDTH / 2
-        const val MAX_IMAGE_SIZE: Float = 100f
-
-        // TODO better solution, reCalculate() and then cache values (enum map?)
-        fun getSize(maxSize: Float, width: Int, modifier: Float = 1f): Float =
-            if (width >= DEFAULT_SCREEN_WIDTH) {
-                maxSize
-            } else {
-                width.toFloat() / DEFAULT_SCREEN_WIDTH * maxSize * modifier
-            }
 
         fun nextFloat(min: Float, max: Float): Float =
             Random.nextFloat() * (max - min) + min
@@ -81,7 +66,25 @@ class Utils {
                 @Suppress("DEPRECATION")
                 context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
-            vibrator.vibrate(VibrationEffect.createOneShot(lengthMillis, amplitude))
+            if (Build.VERSION.SDK_INT >= 26) {
+                vibrator.vibrate(VibrationEffect.createOneShot(lengthMillis, amplitude))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(lengthMillis)
+            }
         }
+
+        fun setPaintShadowLayer(paint: Paint, parentView: View) =
+            paint.setShadowLayer(
+                ComponentSizeCache.getSize(ComponentSizeCache.SizeType.MAX_SHADOW_PARAMS),
+                ComponentSizeCache.getSize(ComponentSizeCache.SizeType.MAX_SHADOW_PARAMS),
+                ComponentSizeCache.getSize(ComponentSizeCache.SizeType.MAX_SHADOW_PARAMS),
+                if (Build.VERSION.SDK_INT >= 23) {
+                    parentView.resources.getColor(R.color.grey, null)
+                } else {
+                    @Suppress("DEPRECATION")
+                    parentView.resources.getColor(R.color.grey)
+                }
+            )
     }
 }
