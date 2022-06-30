@@ -1,14 +1,17 @@
 package ro.blaxphoenix.touchreflex.utils
 
 import android.content.Context
+import android.graphics.Paint
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.view.View
 import androidx.annotation.IntRange
 import com.google.common.collect.Range
 import com.google.common.collect.RangeMap
 import com.google.common.collect.TreeRangeMap
+import ro.blaxphoenix.touchreflex.R
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToLong
@@ -81,7 +84,24 @@ class Utils {
                 @Suppress("DEPRECATION")
                 context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
-            vibrator.vibrate(VibrationEffect.createOneShot(lengthMillis, amplitude))
+            if (Build.VERSION.SDK_INT >= 26) {
+                vibrator.vibrate(VibrationEffect.createOneShot(lengthMillis, amplitude))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(lengthMillis)
+            }
         }
+
+        fun setPaintShadowLayer(paint: Paint, parentView: View) =
+            // TODO shadow size based on screen size / dynamically set the same as other params
+            paint.setShadowLayer(
+                5.5f, 6.0f, 6.0f,
+                if (Build.VERSION.SDK_INT >= 23) {
+                    parentView.resources.getColor(R.color.grey, null)
+                } else {
+                    @Suppress("DEPRECATION")
+                    parentView.resources.getColor(R.color.grey)
+                }
+            )
     }
 }

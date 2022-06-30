@@ -6,8 +6,8 @@ import android.graphics.RectF
 import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
-import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
+import ro.blaxphoenix.touchreflex.utils.Utils
 
 class BackgroundRectangle(
     parentView: View,
@@ -38,12 +38,7 @@ class BackgroundRectangle(
         paintFill.color = color
         paintFill.alpha = alpha
         paintFill.style = Paint.Style.FILL
-        paintFill.setShadowLayer(
-            5.5f,
-            6.0f,
-            6.0f,
-            parentView.resources.getColor(R.color.grey, null)
-        )
+        Utils.setPaintShadowLayer(paintFill, parentView)
         paintStroke.style = Paint.Style.STROKE
         paintStroke.strokeWidth = 4f
         paintStroke.color = color

@@ -77,7 +77,7 @@ open class InfiniteCompositeCircleDrawableManager(
             x,
             y,
             radius,
-            animatorValue = radius,
+            defaultRadius = radius,
             circleDuration,
             hue,
             alpha
@@ -100,7 +100,7 @@ open class InfiniteCompositeCircleDrawableManager(
                 it.xCenter,
                 it.yCenter
                 // TODO is this good enough?
-            ) <= it.animatorValue * 4
+            ) <= it.defaultRadius * 4
         } != null
 
     private fun postDelayed(
@@ -129,6 +129,7 @@ open class InfiniteCompositeCircleDrawableManager(
 
     protected open fun updateTimers() {
         // TODO remove all debugger println(s)
+        // TODO configurable logger?
         if (circleDuration > settings.minCircleDuration) {
             val percentage: Float = settings.minCircleDuration / circleDuration.toFloat() * 100
             val modifier: Long? =

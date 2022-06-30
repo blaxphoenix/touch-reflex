@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "ro.blaxphoenix.touchreflex"
-        minSdk 28
+        minSdk 22
         targetSdk 31
         versionCode 1
         versionName "1.0"
