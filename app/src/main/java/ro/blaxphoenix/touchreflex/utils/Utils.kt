@@ -22,25 +22,7 @@ class Utils {
     companion object {
         @IntRange(from = 1, to = 15)
         const val MAX_NUMBER_OF_CIRCLES_AT_ONCE: Int = 12
-
-        @Suppress("MemberVisibilityCanBePrivate")
         const val DEFAULT_SCREEN_WIDTH: Int = 1440
-
-        const val MAX_CIRCLE_RADIUS: Float = 120f
-        const val MAX_SMALL_TEXT_SIZE: Float = 60f
-        const val MAX_DEFAULT_TEXT_SIZE: Float = 100f
-        const val MAX_BUTTON_TEXT_SIZE: Float = MAX_DEFAULT_TEXT_SIZE
-        const val MAX_BUTTON_WIDTH: Float = 450f
-        const val MAX_BUTTON_HEIGHT: Float = MAX_BUTTON_WIDTH / 2
-        const val MAX_IMAGE_SIZE: Float = 100f
-
-        // TODO better solution, reCalculate() and then cache values (enum map?)
-        fun getSize(maxSize: Float, width: Int, modifier: Float = 1f): Float =
-            if (width >= DEFAULT_SCREEN_WIDTH) {
-                maxSize
-            } else {
-                width.toFloat() / DEFAULT_SCREEN_WIDTH * maxSize * modifier
-            }
 
         fun nextFloat(min: Float, max: Float): Float =
             Random.nextFloat() * (max - min) + min
@@ -93,9 +75,10 @@ class Utils {
         }
 
         fun setPaintShadowLayer(paint: Paint, parentView: View) =
-            // TODO shadow size based on screen size / dynamically set the same as other params
             paint.setShadowLayer(
-                5.5f, 6.0f, 6.0f,
+                ComponentSizeCache.getSize(ComponentSizeCache.SizeType.MAX_SHADOW_PARAMS),
+                ComponentSizeCache.getSize(ComponentSizeCache.SizeType.MAX_SHADOW_PARAMS),
+                ComponentSizeCache.getSize(ComponentSizeCache.SizeType.MAX_SHADOW_PARAMS),
                 if (Build.VERSION.SDK_INT >= 23) {
                     parentView.resources.getColor(R.color.grey, null)
                 } else {

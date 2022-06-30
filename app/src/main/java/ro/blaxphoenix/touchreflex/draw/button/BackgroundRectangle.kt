@@ -10,7 +10,7 @@ import ro.blaxphoenix.touchreflex.draw.CustomDrawable
 import ro.blaxphoenix.touchreflex.utils.Utils
 
 class BackgroundRectangle(
-    parentView: View,
+    private val parentView: View,
     var rect: RectF,
     @ColorInt color: Int,
     @IntRange(from = 0, to = 255) alpha: Int = 50
@@ -38,7 +38,7 @@ class BackgroundRectangle(
         paintFill.color = color
         paintFill.alpha = alpha
         paintFill.style = Paint.Style.FILL
-        Utils.setPaintShadowLayer(paintFill, parentView)
+        resetShadowLayer()
         paintStroke.style = Paint.Style.STROKE
         paintStroke.strokeWidth = 4f
         paintStroke.color = color
@@ -55,5 +55,7 @@ class BackgroundRectangle(
     override fun onDisable() {}
 
     override fun isInBoundary(touchX: Float, touchY: Float): Boolean = rect.contains(touchX, touchY)
+
+    fun resetShadowLayer() = Utils.setPaintShadowLayer(paintFill, parentView)
 
 }

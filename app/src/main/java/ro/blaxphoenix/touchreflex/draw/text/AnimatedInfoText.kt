@@ -10,14 +10,14 @@ import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import androidx.core.content.res.ResourcesCompat
 import ro.blaxphoenix.touchreflex.R
+import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache
 import ro.blaxphoenix.touchreflex.utils.ReverseInterpolator
 import ro.blaxphoenix.touchreflex.utils.Utils
 
 class AnimatedInfoText(
     private val parentView: View,
     text: String,
-    @FloatRange(from = .0, to = Utils.MAX_DEFAULT_TEXT_SIZE.toDouble())
-    textSize: Float = Utils.MAX_DEFAULT_TEXT_SIZE,
+    textSize: Float = ComponentSizeCache.SizeType.MAX_DEFAULT_TEXT_SIZE.size,
     @ColorInt color: Int = ResourcesCompat.getColor(parentView.resources, R.color.white, null)
 ) : InfoText(parentView, text, textSize, color) {
 

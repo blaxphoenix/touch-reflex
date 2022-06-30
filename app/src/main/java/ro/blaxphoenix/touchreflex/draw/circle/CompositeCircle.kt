@@ -11,6 +11,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import ro.blaxphoenix.touchreflex.draw.CustomDrawable
+import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache
 import ro.blaxphoenix.touchreflex.utils.ReverseInterpolator
 import ro.blaxphoenix.touchreflex.utils.Utils
 import kotlin.math.max
@@ -20,9 +21,7 @@ class CompositeCircle(
     private val parentView: View,
     val xCenter: Float,
     val yCenter: Float,
-    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
-    private var radius: Float = Utils.MAX_CIRCLE_RADIUS,
-    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
+    private var radius: Float = ComponentSizeCache.SizeType.MAX_CIRCLE_RADIUS.size,
     defaultRadius: Float,
     private val duration: Long,
     @FloatRange(from = .0, to = 360.0)

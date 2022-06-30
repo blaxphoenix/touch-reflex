@@ -8,6 +8,7 @@ import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import ro.blaxphoenix.touchreflex.draw.CustomDrawableManager
 import ro.blaxphoenix.touchreflex.draw.ReflexAnimationCallback
+import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache
 import ro.blaxphoenix.touchreflex.utils.Utils
 import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.math.roundToLong
@@ -25,8 +26,7 @@ open class InfiniteCompositeCircleDrawableManager(
     private var circleDuration: Long = settings.startCircleDuration
     private var circleInterval: Long = settings.startCircleInterval
 
-    @FloatRange(from = .0, to = Utils.MAX_CIRCLE_RADIUS.toDouble())
-    var radius: Float = Utils.MAX_CIRCLE_RADIUS
+    var radius: Float = ComponentSizeCache.SizeType.MAX_CIRCLE_RADIUS.size
 
     @FloatRange(from = .0, to = 360.0)
     private var hue: Float = 0f
