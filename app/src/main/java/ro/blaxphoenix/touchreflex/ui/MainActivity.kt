@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         audioService.pause()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (reflexAnimationView.state == START) {
             if (backPressedOnce) {
