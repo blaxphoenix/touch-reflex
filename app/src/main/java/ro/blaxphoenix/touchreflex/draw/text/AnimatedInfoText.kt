@@ -7,12 +7,10 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
-import androidx.annotation.FloatRange
 import androidx.core.content.res.ResourcesCompat
 import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache
 import ro.blaxphoenix.touchreflex.utils.ReverseInterpolator
-import ro.blaxphoenix.touchreflex.utils.Utils
 
 class AnimatedInfoText(
     private val parentView: View,
@@ -41,15 +39,15 @@ class AnimatedInfoText(
             parentView.invalidate()
         }
         animator?.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 if (invert) {
-                    animation?.interpolator = AccelerateDecelerateInterpolator()
-                    animation?.start()
+                    animation.interpolator = AccelerateDecelerateInterpolator()
+                    animation.start()
                     invert = false
                 } else {
-                    animation?.interpolator =
+                    animation.interpolator =
                         ReverseInterpolator(AccelerateDecelerateInterpolator())
-                    animation?.start()
+                    animation.start()
                     invert = true
                 }
             }

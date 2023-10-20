@@ -57,14 +57,14 @@ class CompositeCircle(
         parentView.invalidate()
     }
     private val onAnimationEndListener = object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator?) {
+        override fun onAnimationEnd(animation: Animator) {
             isInverted = true
             initAnimator(Utils.nextLongWithMargin(duration) * 3)
             animator?.start()
         }
     }
     private val onAnimationEndListenerInverted = object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator?) {
+        override fun onAnimationEnd(animation: Animator) {
             if (!isDisabled) {
                 circleManager.onGameOver(xCenter, yCenter)
                 isDone = true

@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
-import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.blue
@@ -16,7 +15,6 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import ro.blaxphoenix.touchreflex.R
 import ro.blaxphoenix.touchreflex.utils.ComponentSizeCache
-import ro.blaxphoenix.touchreflex.utils.Utils
 import kotlin.math.roundToInt
 
 class ScoreTrackerAnimatedInfoText(
@@ -58,7 +56,7 @@ class ScoreTrackerAnimatedInfoText(
             parentView.invalidate()
         }
         animator?.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 paint.textSize = textSize
                 paint.color = Color.argb(alpha, color.red, color.green, color.blue)
             }
